@@ -140,6 +140,7 @@ export function VehicleInfoForm({ vehicleInfo, onChange, onSetVehicle }: Props) 
             name="seriaSasiu"
             value={vehicleInfo.seriaSasiu}
             onChange={handleChange}
+            autoComplete="off"
             className="w-full uppercase form-input focus:ring-2 focus:ring-blue-500 outline-none text-sm"
           />
         </div>
@@ -152,6 +153,7 @@ export function VehicleInfoForm({ vehicleInfo, onChange, onSetVehicle }: Props) 
             name="anFabricatie"
             value={vehicleInfo.anFabricatie}
             onChange={handleChange}
+            autoComplete="off"
             className="form-input"
           />
         </div>
@@ -164,6 +166,7 @@ export function VehicleInfoForm({ vehicleInfo, onChange, onSetVehicle }: Props) 
             name="culoare"
             value={vehicleInfo.culoare}
             onChange={handleChange}
+            autoComplete="off"
             className="form-input"
           />
         </div>
@@ -188,26 +191,30 @@ export function VehicleInfoForm({ vehicleInfo, onChange, onSetVehicle }: Props) 
             name="km"
             value={vehicleInfo.km}
             onChange={handleChange}
+            autoComplete="off"
             className="form-input"
           />
         </div>
         <div>
           <label className="form-label">
-            Nivel Carburant
+            Nivel Carburant (%)
           </label>
-          <select
-            name="nivelCarburant"
-            value={vehicleInfo.nivelCarburant}
-            onChange={(e) => onChange("nivelCarburant", e.target.value)}
-            className="form-input"
-          >
-            <option value="">Selectează...</option>
-            <option value="Rezerva">Rezerva</option>
-            <option value="1/4">1/4</option>
-            <option value="1/2">1/2 (Jumătate)</option>
-            <option value="3/4">3/4</option>
-            <option value="1/1">Plin (1/1)</option>
-          </select>
+          <div className="relative">
+            <input
+              type="number"
+              name="nivelCarburant"
+              min="0"
+              max="100"
+              value={vehicleInfo.nivelCarburant}
+              onChange={handleChange}
+              autoComplete="off"
+              className="form-input pr-8"
+              placeholder="0 - 100"
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
+              %
+            </span>
+          </div>
         </div>
       </div>
     </div>

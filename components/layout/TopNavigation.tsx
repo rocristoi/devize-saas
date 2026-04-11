@@ -29,7 +29,12 @@ export function TopNavigation() {
     <div className="mb-4 overflow-x-auto scrollbar-hide">
       <nav className="flex space-x-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1 min-w-max">
         {MENU_ITEMS.map((item) => {
-          const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
+          const isActive = 
+            item.href === "/devize"
+              ? pathname === "/devize" || (pathname.startsWith("/devize/") && !pathname.startsWith("/devize/nou"))
+              : item.href === "/"
+              ? pathname === "/"
+              : pathname.startsWith(item.href);
           
           return (
             <Link

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,6 +18,16 @@ import { cn } from "@/lib/utils";
 export function Sidebar() {
   const pathname = usePathname();
   const { isCollapsed } = useSidebar();
+  const [showBrandText, setShowBrandText] = useState(!isCollapsed);
+
+  useEffect(() => {
+    if (isCollapsed) {
+      setShowBrandText(false);
+    } else {
+      const timer = setTimeout(() => setShowBrandText(true), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isCollapsed]);
 
   const MENU_ITEMS = [
     { name: "Panou Control", href: "/", icon: <LayoutDashboard size={20} /> },
@@ -36,31 +47,37 @@ export function Sidebar() {
     >
       <div className="h-16 flex items-center px-6 border-b border-gray-200 dark:border-gray-800 transition-colors">
         <AnimatePresence mode="popLayout" initial={false}>
-          {!isCollapsed ? (
+          {showBrandText ? (
             <motion.span
               layoutId="sidebar-brand-text"
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -10 }}
               transition={{ duration: 0.2 }}
-              className="font-bold text-[15px] tracking-tight text-gray-400 dark:text-gray-500 uppercase"
+              className="font-bold text-[15px] tracking-tight text-gray-400 dark:text-gray-500 uppercase whitespace-nowrap overflow-hidden"
             >
               Meniu principal
             </motion.span>
-          ) : (
+          ) : isCollapsed ? (
             <motion.div
               layoutId="sidebar-brand-icon"
               className="flex items-center justify-center w-full"
             >
               <div className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-500" />
             </motion.div>
-          )}
+          ) : null}
         </AnimatePresence>
       </div>
 
       <nav className="flex-1 overflow-x-hidden overflow-y-auto px-4 py-6 space-y-1.5 scrollbar-hide">
         {MENU_ITEMS.map((item) => {
-          const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
+          const isActive = 
+            item.href === "/devize"
+              ? pathname === "/devize" || (pathname.startsWith("/devize/") && !pathname.startsWith("/devize/nou"))
+              : item.href === "/"
+              ? pathname === "/"
+              : pathname.startsWith(item.href);
+              
           return (
             <Link
               key={item.href}

@@ -3,6 +3,7 @@
 import { ClientInfo } from "@/types/deviz";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { CustomDatePicker } from "@/components/ui/CustomDatePicker";
 
 interface Props {
   clientInfo: ClientInfo;
@@ -110,6 +111,7 @@ export function ClientInfoForm({ clientInfo, onChange, onSetClient }: Props) {
             name="cuiCnp"
             value={clientInfo.cuiCnp}
             onChange={handleChange}
+            autoComplete="off"
             className="form-input"
           />
         </div>
@@ -151,6 +153,7 @@ export function ClientInfoForm({ clientInfo, onChange, onSetClient }: Props) {
             name="locatie"
             value={clientInfo.locatie}
             onChange={handleChange}
+            autoComplete="off"
             className="form-input"
           />
         </div>
@@ -163,6 +166,7 @@ export function ClientInfoForm({ clientInfo, onChange, onSetClient }: Props) {
             name="strada"
             value={clientInfo.strada}
             onChange={handleChange}
+            autoComplete="off"
             className="form-input"
           />
         </div>
@@ -177,24 +181,24 @@ export function ClientInfoForm({ clientInfo, onChange, onSetClient }: Props) {
           <label className="form-label">
             Data intrare
           </label>
-          <input
-            type="date"
-            name="dataIntrare"
+          <CustomDatePicker
             value={clientInfo.dataIntrare}
-            onChange={handleChange}
-            className="form-input"
+            onChange={(date: Date | undefined) => {
+              const adjustedDate = date ? new Date(date.getTime() - date.getTimezoneOffset() * 60000) : null;
+              onChange("dataIntrare", adjustedDate ? adjustedDate.toISOString().split("T")[0] : "");
+            }}
           />
         </div>
         <div>
           <label className="form-label">
             Data estimată ieșire
           </label>
-          <input
-            type="date"
-            name="dataIesire"
+          <CustomDatePicker
             value={clientInfo.dataIesire}
-            onChange={handleChange}
-            className="form-input"
+            onChange={(date: Date | undefined) => {
+              const adjustedDate = date ? new Date(date.getTime() - date.getTimezoneOffset() * 60000) : null;
+              onChange("dataIesire", adjustedDate ? adjustedDate.toISOString().split("T")[0] : "");
+            }}
           />
         </div>
         <div className="col-span-1 md:col-span-2 lg:col-span-3">
@@ -206,6 +210,7 @@ export function ClientInfoForm({ clientInfo, onChange, onSetClient }: Props) {
             name="motivIntrare"
             value={clientInfo.motivIntrare}
             onChange={handleChange}
+            autoComplete="off"
             className="form-input"
           />
         </div>
@@ -218,7 +223,8 @@ export function ClientInfoForm({ clientInfo, onChange, onSetClient }: Props) {
             value={clientInfo.observatii}
             onChange={handleChange}
             rows={2}
-            className="rounded-lg"
+            autoComplete="off"
+            className="rounded-lg form-input"
           />
         </div>
       </div>
