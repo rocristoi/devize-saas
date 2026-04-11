@@ -1,0 +1,190 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --color-primary-50: #e3f2fd;
+  --color-primary-100: #bbdefb;
+  --color-primary-200: #90caf9;
+  --color-primary-300: #64b5f6;
+  --color-primary-400: #42a5f5;
+  --color-primary-500: #2196f3;
+  --color-primary-600: #1e88e5;
+  --color-primary-700: #1976d2;
+  --color-primary-800: #1565c0;
+  --color-primary-900: #0d47a1;
+  --color-primary-950: #0a3a82;
+
+  --color-success-500: #059669;
+  --color-warning-500: #d97706;
+  --color-error-500: #dc2626;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, Menlo, Consolas, monospace;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+
+  /* Basic Electron variables mappings */
+  --ev-c-white: #ffffff;
+  --ev-c-white-soft: #f8f8f8;
+  --ev-c-white-mute: #f2f2f2;
+  --ev-c-black: #1b1b1f;
+  --ev-c-black-soft: #222222;
+  --ev-c-black-mute: #282828;
+  --ev-c-gray-1: #515c67;
+  --ev-c-gray-2: #414853;
+  --ev-c-gray-3: #32363f;
+
+  --ev-c-text-1: rgba(255, 255, 245, 0.86);
+  --ev-c-text-2: rgba(235, 235, 245, 0.6);
+  --ev-c-text-3: rgba(235, 235, 245, 0.38);
+
+  --ev-button-alt-border: transparent;
+  --ev-button-alt-text: var(--ev-c-text-1);
+  --ev-button-alt-bg: var(--ev-c-gray-3);
+  --ev-button-alt-hover-border: transparent;
+  --ev-button-alt-hover-text: var(--ev-c-text-1);
+  --ev-button-alt-hover-bg: var(--ev-c-gray-2);
+}
+
+.dark {
+  --background: #111827; 
+  --foreground: #f9fafb; 
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-sans);
+  transition: color 0.3s ease, background-color 0.3s ease;
+  min-height: 100vh;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar hide */
+html, body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar, body::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Animations */
+@keyframes slide-in-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-slide-in {
+  animation: slide-in-bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--color-primary-600);
+  border-color: var(--color-primary-600);
+  @apply text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  --tw-ring-color: var(--color-primary-500);
+}
+.btn-primary:hover {
+  background-color: var(--color-primary-700);
+  border-color: var(--color-primary-700);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.btn-secondary {
+  @apply bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2;
+}
+.btn-secondary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Cards */
+.card {
+  @apply bg-white dark:bg-gray-800 rounded-md shadow-md border border-gray-200 dark:border-gray-700 transition-all duration-300;
+}
+.card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.input-enhanced {
+  @apply px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md text-sm transition-colors duration-200 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20;
+}
+
+/* Number inputs */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+@layer components {
+  /* Ultra-Professional Form Controls */
+  input[type='text'], input[type='number'], input[type='email'], input[type='password'], input[type='date'], textarea, select, .form-input {
+    @apply w-full rounded-md border border-gray-300 bg-white/70 px-4 py-2.5 text-sm text-gray-900 shadow-sm transition-all duration-300;
+    @apply dark:border-gray-700 dark:bg-gray-800/80 dark:text-gray-100;
+    @apply focus:border-[#2563eb] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#2563eb]/15;
+    @apply dark:focus:border-[#3b82f6] dark:focus:bg-gray-900 dark:focus:ring-[#3b82f6]/20;
+    @apply hover:border-gray-400 dark:hover:border-gray-500;
+    backdrop-filter: blur(8px);
+  }
+
+  /* Datepickers Native Reskin */
+  input[type='date']::-webkit-calendar-picker-indicator {
+    @apply cursor-pointer opacity-60 transition-opacity duration-200 hover:opacity-100 dark:invert;
+  }
+  
+  .form-label {
+    @apply mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300;
+  }
+
+  .card-container {
+    @apply rounded-md bg-white p-6 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] ring-1 ring-gray-950/5 transition-all duration-300;
+    @apply dark:bg-gray-900/90 dark:ring-white/10 dark:shadow-none;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-md bg-[#2563eb] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200;
+    @apply hover:bg-[#1d4ed8] hover:shadow-md focus:outline-none focus:ring-4 focus:ring-[#2563eb]/30 active:scale-[0.98] disabled:opacity-50;
+    @apply dark:bg-[#3b82f6] dark:hover:bg-[#2563eb];
+    letter-spacing: 0.01em;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm transition-all duration-200;
+    @apply hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-200/50 active:scale-[0.98];
+    @apply dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700/50;
+    letter-spacing: 0.01em;
+  }
+}

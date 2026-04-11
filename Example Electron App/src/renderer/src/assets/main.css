@@ -1,0 +1,156 @@
+/* Tailwind CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Theme Color Variables - Will be overridden by ThemeManager */
+:root {
+  --color-primary: #2563eb;
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+}
+
+/* Base styles for dark mode */
+body {
+  @apply bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300;
+}
+
+/* Hide main scrollbar but keep functionality */
+html, body {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+html::-webkit-scrollbar, body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Hide scrollbar for specific containers but keep functionality */
+.scrollbar-hide {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Enhanced animations and effects */
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.gradient-shift {
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradient-shift 15s ease infinite;
+}
+
+/* Smooth focus effects */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900;
+  --tw-ring-color: var(--color-primary);
+}
+
+/* Glass morphism effect */
+.glass {
+  backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(209, 213, 219, 0.3);
+}
+
+.glass-dark {
+  backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(17, 24, 39, 0.75);
+  border: 1px solid rgba(75, 85, 99, 0.3);
+}
+
+/* Hover lift effect - DISABLED */
+.hover-lift {
+  /* No animations */
+}
+
+/* Table hover effects - SIMPLIFIED */
+.table-row-hover {
+  @apply transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-800;
+}
+
+/* Button variants - Using CSS Custom Properties */
+.btn-primary {
+  background-color: var(--color-primary-600);
+  border-color: var(--color-primary-600);
+  @apply text-white font-medium py-2 px-4 rounded-none transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  --tw-ring-color: var(--color-primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-700);
+  border-color: var(--color-primary-700);
+}
+
+.btn-secondary {
+  @apply bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-none transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  --tw-ring-color: var(--color-primary);
+}
+
+.btn-success {
+  @apply bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-none transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  --tw-ring-color: var(--color-primary);
+}
+
+.btn-danger {
+  @apply bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-none transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  --tw-ring-color: var(--color-primary);
+}
+
+/* Card enhancements - NO HOVER SHADOW */
+.card {
+  @apply bg-white dark:bg-gray-900 rounded-none shadow-lg border border-gray-200 dark:border-gray-700;
+}
+
+.card-header {
+  @apply border-b border-gray-200 dark:border-gray-700 pb-4 mb-6;
+}
+
+/* Input enhancements - UNIFIED BLUE OUTLINE */
+.input-enhanced {
+  @apply px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-none text-sm transition-colors duration-200 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20;
+}
+
+/* Text gradient effects */
+.text-gradient-blue {
+  @apply bg-gradient-to-r from-blue-600 to-blue-600 bg-clip-text text-transparent;
+}
+
+.text-gradient-green {
+  @apply bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent;
+}
+
+.text-gradient-orange {
+  @apply bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent;
+}
+
+/* Hide number input spinners/arrows */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
