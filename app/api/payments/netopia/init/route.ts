@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { generateNetopiaPayload } from "@/lib/netopia";
+import { encryptNetopiaPayload } from "@/lib/netopia";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -50,23 +50,21 @@ export async function POST(req: NextRequest) {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
   // Generam payload-ul pt Netopia
-  const netopiaPayload = generateNetopiaPayload({
+  const netopiaPayload = encryptNetopiaPayload({
     orderId,
     amount,
     currency: "RON",
-    details: `Abonament ${planId} - Devize Auto Koders SaaS`,
-    confirmUrl: `${baseUrl}/api/payments/netopia/ipn`, // Webhook-ul pe care-l apelează Netopia (ascuns, fără browser)
-    returnUrl: `${baseUrl}/abonament?status=success`,     // Unde este redirectat clientul după plată (spre success page)
+    details: `Abonament ${planId} - Devize Auto Koders`,
+    confirmUrl: `${baseUrl}/api/payments/netopia/ipn`,
+    returnUrl: `${baseUrl}/abonament?status=success`,
     billing: {
       firstName: userData.user.user_metadata?.first_name || "Client",
       lastName: userData.user.user_metadata?.last_name || "Auto",
       email: userData.user.email!,
-      phone: "0000000000" // Aici poti prelua din profiles
+      phone: "0000000000"
     }
   });
 
-  // Întrucât Netopia necesită un formular POST ce se trimite auto by browser
-  // vom expune un HTML mic cu auto-submit catre URL-ul Netopiei
   const htmlForm = `
     <!DOCTYPE html>
     <html>
@@ -76,8 +74,10 @@ export async function POST(req: NextRequest) {
       <body onload="document.forms[0].submit()">
         <p>Se redirecționează către procesatorul de plăți securizat...</p>
         <form action="${netopiaPayload.url}" method="POST">
-          <input type="hidden" name="env_key" value="${netopiaPayload.envKey}"/>
-          <input type="hidden" name="data" value="${netopiaPayload.data}"/>
+          <input type="hidden" name="env_key" value="${netopiaPayload.env_key}"/>
+          <input type="hidden" name="data"    value="${netopiaPayload.data}"/>
+          <input type="hidden" name="iv"      value="${netopiaPayload.iv}"/>
+          <input type="hidden" name="cipher"  value="${netopiaPayload.cipher}"/>
           <noscript>
              <button type="submit">Click aici dacă nu sunteți redirecționat automat</button>
           </noscript>

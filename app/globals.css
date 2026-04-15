@@ -98,6 +98,14 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+@keyframes pdf-progress {
+  0%   { width: 0%;   margin-left: 0; }
+  50%  { width: 60%;  margin-left: 20%; }
+  100% { width: 0%;   margin-left: 100%; }
+}
+.animate-pdf-progress {
+  animation: pdf-progress 1.6s ease-in-out infinite;
+}
 
 .animate-slide-in {
   animation: slide-in-bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -152,7 +160,7 @@ input[type="number"] {
 @layer components {
   /* Ultra-Professional Form Controls */
   input[type='text'], input[type='number'], input[type='email'], input[type='password'], input[type='date'], textarea, select, .form-input {
-    @apply w-full rounded-md border border-gray-300 bg-white/70 px-4 py-2.5 text-sm text-gray-900 shadow-sm transition-all duration-300;
+    @apply w-full rounded-md border border-gray-300 bg-white/70 px-3 py-2 md:px-4 md:py-2.5 text-sm text-gray-900 shadow-sm transition-all duration-300;
     @apply dark:border-gray-700 dark:bg-gray-800/80 dark:text-gray-100;
     @apply focus:border-[#2563eb] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#2563eb]/15;
     @apply dark:focus:border-[#3b82f6] dark:focus:bg-gray-900 dark:focus:ring-[#3b82f6]/20;
@@ -166,23 +174,23 @@ input[type="number"] {
   }
   
   .form-label {
-    @apply mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300;
+    @apply mb-1.5 block text-xs font-medium text-gray-700 dark:text-gray-300;
   }
 
   .card-container {
-    @apply rounded-md bg-white p-6 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] ring-1 ring-gray-950/5 transition-all duration-300;
+    @apply rounded-md bg-white p-4 md:p-6 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] ring-1 ring-gray-950/5 transition-all duration-300;
     @apply dark:bg-gray-900/90 dark:ring-white/10 dark:shadow-none;
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-md bg-[#2563eb] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200;
+    @apply inline-flex items-center justify-center rounded-md bg-[#2563eb] px-3 py-2 md:px-4 md:py-2.5 text-xs sm:text-sm font-semibold text-white shadow-sm transition-all duration-200;
     @apply hover:bg-[#1d4ed8] hover:shadow-md focus:outline-none focus:ring-4 focus:ring-[#2563eb]/30 active:scale-[0.98] disabled:opacity-50;
     @apply dark:bg-[#3b82f6] dark:hover:bg-[#2563eb];
     letter-spacing: 0.01em;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm transition-all duration-200;
+    @apply inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-3 py-2 md:px-4 md:py-2.5 text-xs sm:text-sm font-semibold text-gray-700 shadow-sm transition-all duration-200;
     @apply hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-200/50 active:scale-[0.98];
     @apply dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700/50;
     letter-spacing: 0.01em;

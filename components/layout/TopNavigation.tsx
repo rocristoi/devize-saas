@@ -21,6 +21,7 @@ export function TopNavigation() {
     { name: "Deviz nou", href: "/devize/nou", icon: <FileText size={16} /> },
     { name: "Istoric Devize", href: "/devize", icon: <History size={16} /> },
     { name: "Gestiune Piese", href: "/piese", icon: <PackageSearch size={16} /> },
+    { name: "Căutare", href: "/cautare", icon: <Search size={16} /> },
     { name: "Abonament", href: "/abonament", icon: <CreditCard size={16} /> },
     { name: "Setări", href: "/setari", icon: <Settings size={16} /> },
   ];

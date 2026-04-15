@@ -70,6 +70,13 @@ export default async function DashboardPage() {
     }
   }
 
+  // Get recent announcements
+  const { data: announcements } = await supabase
+    .from('announcements')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(5);
+
   return (
     <DashboardClient 
       devizeCount={devizeCount || 0}
@@ -77,6 +84,7 @@ export default async function DashboardPage() {
       subscriptionStateText={subscriptionStateText}
       subscriptionSubtext={subscriptionSubtext}
       companyName={(profile?.companies as any)?.service_name || "Compania Ta"}
+      announcements={announcements || []}
     />
   );
 }

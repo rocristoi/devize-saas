@@ -170,6 +170,8 @@ CREATE POLICY "Company isolation for clients" ON clients FOR ALL USING (company_
 CREATE POLICY "Company isolation for vehicles" ON vehicles FOR ALL USING (company_id = get_my_company_id());
 CREATE POLICY "Company isolation for parts_inventory" ON parts_inventory FOR ALL USING (company_id = get_my_company_id());
 CREATE POLICY "Company isolation for devize" ON devize FOR ALL USING (company_id = get_my_company_id());
+CREATE POLICY "Company isolation for deviz_parts" ON deviz_parts FOR ALL USING (deviz_id IN (SELECT id FROM devize WHERE company_id = get_my_company_id()));
+CREATE POLICY "Company isolation for deviz_labor" ON deviz_labor FOR ALL USING (deviz_id IN (SELECT id FROM devize WHERE company_id = get_my_company_id()));
 
 -- Delete/Update triggers to automatically update timestamps
 CREATE OR REPLACE FUNCTION set_updated_at() RETURNS trigger AS $$
@@ -192,4 +194,24 @@ GRANT USAGE ON SCHEMA public TO postgres, anon, authenticated, service_role;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO postgres, anon, authenticated, service_role;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO postgres, anon, authenticated, service_role;
 GRANT ALL PRIVILEGES ON ALL ROUTINES IN SCHEMA public TO postgres, anon, authenticated, service_role;
+
+
+-- 5. Mobile Scan Upload Sessions
+CREATE TABLE upload_sessions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  company_id UUID REFERENCES companies(id) ON DELETE CASCADE,
+  status TEXT NOT NULL DEFAULT 'pending', -- pending, completed, failed
+  image_url TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  expires_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '15 minutes')
+);
+
+ALTER TABLE upload_sessions ENABLE ROW LEVEL SECURITY;
+
+-- Allow public access to read/update the session so the mobile unauthenticated browser can use it.
+-- But we restrict it to just updating image_url and status.
+CREATE POLICY "Public can view upload session" ON upload_sessions FOR SELECT USING (true);
+CREATE POLICY "Public can update upload session" ON upload_sessions FOR UPDATE USING (status = 'pending');
+CREATE POLICY "Authenticated users can create upload session" ON upload_sessions FOR INSERT TO authenticated WITH CHECK (company_id = get_my_company_id());
+CREATE POLICY "Company isolation for upload_sessions" ON upload_sessions FOR ALL USING (company_id = get_my_company_id());
 

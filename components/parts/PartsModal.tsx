@@ -4,10 +4,12 @@ import { useState, useEffect } from "react";
 import { Modal } from "@/components/ui/Modal";
 
 export function PartsModal({ 
+  isOpen,
   part, 
   onClose, 
   onSave 
 }: { 
+  isOpen: boolean,
   part: any, 
   onClose: () => void, 
   onSave: (data: any) => Promise<void> 
@@ -50,7 +52,7 @@ export function PartsModal({
 
   return (
     <Modal 
-      isOpen={true} 
+      isOpen={isOpen} 
       onClose={onClose} 
       title={part ? "Editare Piesă" : "Adăugare Piesă Nouă"}
     >

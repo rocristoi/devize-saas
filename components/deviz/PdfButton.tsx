@@ -4,8 +4,10 @@ import { Printer } from "lucide-react";
 import { useState } from "react";
 import { generateWebDeviz } from "@/lib/pdfGenerator";
 import { toast } from "sonner";
+import { PdfLoader } from "@/components/ui/PdfLoader";
 
 interface Props {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   deviz: any;
 }
 
@@ -17,42 +19,33 @@ export function PdfButton({ deviz }: Props) {
     setIsGenerating(true);
 
     try {
-      // Import html2pdf dynamically so we don't break SSR
-      const html2pdf = (await import('html2pdf.js')).default;
       const html = generateWebDeviz(deviz);
-      
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = html;
-      document.body.appendChild(tempDiv);
-      
-      const opt = {
-        filename: `${deviz.companies?.pdf_filename || 'Deviz'}_${deviz.numar_referinta}.pdf`,
-        image: { type: 'jpeg' as const, quality: 0.98 },
-        html2canvas: { 
-          scale: 2,
-          useCORS: true,
-          letterRendering: true,
-          allowTaint: true,
-          scrollX: 0,
-          scrollY: 0
-        },
-        jsPDF: { 
-          unit: 'mm', 
-          format: 'a4', 
-          orientation: 'portrait' as const,
-          compress: true
-        },
-        pagebreak: {
-          mode: ['avoid-all', 'css', 'legacy'],
-          before: '.page-break',
-          avoid: '.avoid-break',
-          after: '.section-break'
-        }
-      };
-      
-      await html2pdf().set(opt).from(tempDiv).save();
-      document.body.removeChild(tempDiv);
+      const filename = `${deviz.companies?.pdf_filename || 'Deviz'}_${deviz.series || deviz.id || 'Nou'}.pdf`;
 
+      const response = await fetch('/api/generate-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ html, filename }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate PDF');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error generating PDF:', error);
       toast.error("A apărut o problemă la generarea PDF-ului. Vedeți consola pentru detalii.");
@@ -65,10 +58,16 @@ export function PdfButton({ deviz }: Props) {
     <button 
       onClick={handleGeneratePdf}
       disabled={isGenerating}
-      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition font-medium shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-gray-100/20 disabled:opacity-50"
+      className="relative flex items-center justify-center gap-1.5 md:gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white px-2.5 py-1.5 md:px-3 md:py-2 text-xs md:text-sm rounded-lg font-medium shadow-sm border border-blue-500/30 whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed overflow-hidden transition-all"
     >
-      <Printer className="w-5 h-5" />
-      {isGenerating ? "Se generează..." : "Descarcă PDF"}
+      {isGenerating ? (
+        <PdfLoader variant="button" label="Se generează..." />
+      ) : (
+        <>
+          <Printer className="w-4 h-4 shrink-0" />
+          <span>Descarcă PDF</span>
+        </>
+      )}
     </button>
   );
 }

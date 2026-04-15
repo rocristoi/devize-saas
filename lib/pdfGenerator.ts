@@ -29,6 +29,13 @@ export const generateWebDeviz = (deviz: any): string => {
     pdf_header_title: 'Deviz Reparație'
   };
 
+        const getPrimaryColor = () => {
+            if (!company?.primary_color) return '#3b82f6';
+            if (company.primary_color.startsWith('rgb') || company.primary_color.startsWith('hsl')) return company.primary_color;
+            return company.primary_color.startsWith('#') ? company.primary_color : `#${company.primary_color}`;
+        };
+        const primaryColor = getPrimaryColor();
+  
   const html = `
 <!DOCTYPE html>
 <html lang="ro">
@@ -38,6 +45,7 @@ export const generateWebDeviz = (deviz: any): string => {
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            content: ["./**/*.{html,js}"],
             theme: {
                 extend: {
                     fontFamily: {
@@ -109,14 +117,14 @@ export const generateWebDeviz = (deviz: any): string => {
                 <h1 class="text-sm font-bold text-gray-800 !text-gray-800">Deviz Auto</h1>
                 <h2 class="text-xs font-medium text-gray-500 !text-gray-500">Referință: #${deviz.series || '------'}</h2>
             </div>
-            ${company.logo_url ? `<img src="${company.logo_url}" alt="${company.service_name}" style="height: 35px"/>` : `<div style="font-weight:bold; font-size:18px;">${company.service_name}</div>`}
+            ${company.logo_url ? `<img src="${company.logo_url}" alt="${company.service_name}" style="height: 25px; max-width: 120px; object-fit: contain;"/>` : `<div style="font-weight:bold; font-size:18px;">${company.service_name}</div>`}
         </div>
         
         <!-- Company and Client Info Section -->
         <div class="flex justify-between items-start mb-3 gap-4 avoid-break">
             <div class="flex-1 max-w-[45%]">
                 <div class="mb-2">
-                    <h1 class="text-base font-bold text-gray-800 !text-gray-800 border-b-2 pb-1 mb-1 w-full" style="border-color: ${company.primary_color}">${company.pdf_header_title || 'DEVIZ REPARAȚIE'}</h1>
+                    <h1 class="text-base font-bold text-gray-800 !text-gray-800 border-b-2 pb-1 mb-1 w-full" style="border-color: ${primaryColor}">${company.pdf_header_title || 'DEVIZ REPARAȚIE'}</h1>
                     <div class="text-xs-compact text-gray-600 !text-gray-600 space-y-0.5">
                         <div class="font-semibold">${company.service_name}</div>
                         <div>${company.address}</div>
@@ -127,7 +135,7 @@ export const generateWebDeviz = (deviz: any): string => {
             </div>
             
             <div class="flex-1 max-w-[45%]">
-                <h2 class="text-base font-bold text-gray-800 !text-gray-800 mb-1 border-b-2 pb-1 w-full" style="border-color: ${company.primary_color}">INFORMAȚII CLIENT</h2>
+                <h2 class="text-base font-bold text-gray-800 !text-gray-800 mb-1 border-b-2 pb-1 w-full" style="border-color: ${primaryColor}">INFORMAȚII CLIENT</h2>
                 <div class="text-xs-compact space-y-0.5">
                     <div class="flex">
                         <span class="font-semibold text-gray-600 !text-gray-600 w-20">Nume/Ales:</span>
@@ -152,7 +160,7 @@ export const generateWebDeviz = (deviz: any): string => {
         <!-- Constatare and Vehicle Info Section -->
         <div class="grid grid-cols-2 gap-14 mb-3 avoid-break">
             <div class="space-y-1">
-                <h3 class="text-base font-bold text-gray-800 !text-gray-800 border-b-2 pb-1 w-full" style="border-color: ${company.primary_color}">CONSTATARE</h3>
+                <h3 class="text-base font-bold text-gray-800 !text-gray-800 border-b-2 pb-1 w-full" style="border-color: ${primaryColor}">CONSTATARE</h3>
                 <div class="text-xs-compact space-y-0.5">
                     <div class="flex">
                         <span class="font-semibold text-gray-600 !text-gray-600 w-20">Motiv intrare:</span>
@@ -166,11 +174,17 @@ export const generateWebDeviz = (deviz: any): string => {
                         <span class="font-semibold text-gray-600 !text-gray-600 w-20">Dată intrare:</span>
                         <span class="text-gray-800 !text-gray-800">${formatDateSafe(deviz.data_intrare)}</span>
                     </div>
+                    ${deviz.data_iesire ? `
+                    <div class="flex">
+                        <span class="font-semibold text-gray-600 !text-gray-600 w-20">Dată ieșire:</span>
+                        <span class="text-gray-800 !text-gray-800">${formatDateSafe(deviz.data_iesire)}</span>
+                    </div>
+                    ` : ''}
                 </div>
             </div>
             
             <div class="space-y-1">
-                <h3 class="text-base font-bold text-gray-800 !text-gray-800 border-b-2 pb-1 w-full" style="border-color: ${company.primary_color}">INFORMAȚII AUTOVEHICUL</h3>
+                <h3 class="text-base font-bold text-gray-800 !text-gray-800 border-b-2 pb-1 w-full" style="border-color: ${primaryColor}">INFORMAȚII AUTOVEHICUL</h3>
                 <div class="text-xs-compact space-y-0.5">
                     <div class="flex">
                         <span class="font-semibold text-gray-600 !text-gray-600 w-20">Marcă/Model:</span>
@@ -204,7 +218,7 @@ export const generateWebDeviz = (deviz: any): string => {
         ${parts.length > 0 ? `
         <div class="compact-table">
             <h3 class="text-base font-bold text-gray-800 !text-gray-800 mb-1 table-header">PIESE ȘI MATERIALE</h3>
-            <div class="w-full h-0.5 mb-1" style="background-color: ${company.primary_color}"></div>
+            <div class="w-full h-0.5 mb-1" style="background-color: ${primaryColor}"></div>
             <div class="overflow-x-auto">
                 <table class="w-full border-collapse border border-gray-300 text-xs-compact">
                     <thead>
@@ -213,7 +227,7 @@ export const generateWebDeviz = (deviz: any): string => {
                             <th class="border border-gray-300 px-2 py-1">Nume Piesă</th>
                             <th class="border border-gray-300 px-2 py-1 text-center">Cant.</th>
                             <th class="border border-gray-300 px-2 py-1 text-right">Preț Unitar</th>
-                            <th class="border border-gray-300 px-2 py-1 text-right">Discount %</th>
+                            <th class="border border-gray-300 px-2 py-1 text-right">Discount</th>
                             <th class="border border-gray-300 px-2 py-1 text-right">Preț Total</th>
                         </tr>
                     </thead>
@@ -224,7 +238,7 @@ export const generateWebDeviz = (deviz: any): string => {
                                 <td class="border border-gray-300 px-2 py-1 !text-gray-900">${part.nume_piesa || '-'}</td>
                                 <td class="border border-gray-300 px-2 py-1 text-center !text-gray-900">${part.cantitate || '-'}</td>
                                 <td class="border border-gray-300 px-2 py-1 text-right !text-gray-900">${(part.pret_unitar || 0).toFixed(2)}</td>
-                                <td class="border border-gray-300 px-2 py-1 text-right !text-gray-900">${part.discount_percentage ? part.discount_percentage + '%' : '-'}</td>
+                                <td class="border border-gray-300 px-2 py-1 text-right !text-gray-900">${part.discount_percentage ? part.discount_percentage.toFixed(2) : '-'}</td>
                                 <td class="border border-gray-300 px-2 py-1 text-right font-semibold !text-gray-900">${(part.total || 0).toFixed(2)}</td>
                             </tr>
                         `).join('')}
@@ -238,7 +252,7 @@ export const generateWebDeviz = (deviz: any): string => {
         ${labor.length > 0 ? `
         <div class="compact-table">
             <h3 class="text-base font-bold text-gray-800 !text-gray-800 mb-1 table-header">MANOPERĂ</h3>
-            <div class="w-full h-0.5 mb-1" style="background-color: ${company.primary_color}"></div>
+            <div class="w-full h-0.5 mb-1" style="background-color: ${primaryColor}"></div>
             <div class="overflow-x-auto">
                 <table class="w-full border-collapse border border-gray-300 text-xs-compact">
                     <thead>
@@ -246,7 +260,7 @@ export const generateWebDeviz = (deviz: any): string => {
                             <th class="border border-gray-300 px-2 py-1">Operațiune</th>
                             <th class="border border-gray-300 px-2 py-1 text-center">Durată (ore)</th>
                             <th class="border border-gray-300 px-2 py-1 text-right">Tarif Orar</th>
-                            <th class="border border-gray-300 px-2 py-1 text-right">Discount %</th>
+                            <th class="border border-gray-300 px-2 py-1 text-right">Discount</th>
                             <th class="border border-gray-300 px-2 py-1 text-right">Preț Total</th>
                         </tr>
                     </thead>
@@ -256,7 +270,7 @@ export const generateWebDeviz = (deviz: any): string => {
                                 <td class="border border-gray-300 px-2 py-1 !text-gray-900">${lab.operatiune || '-'}</td>
                                 <td class="border border-gray-300 px-2 py-1 text-center !text-gray-900">${lab.durata || '-'}</td>
                                 <td class="border border-gray-300 px-2 py-1 text-right !text-gray-900">${(lab.pret_orar || 0).toFixed(2)}</td>
-                                <td class="border border-gray-300 px-2 py-1 text-right !text-gray-900">${lab.discount_percentage ? lab.discount_percentage + '%' : '-'}</td>
+                                <td class="border border-gray-300 px-2 py-1 text-right !text-gray-900">${lab.discount_percentage ? lab.discount_percentage.toFixed(2) : '-'}</td>
                                 <td class="border border-gray-300 px-2 py-1 text-right font-semibold !text-gray-900">${(lab.total || 0).toFixed(2)}</td>
                             </tr>
                         `).join('')}
@@ -277,39 +291,45 @@ export const generateWebDeviz = (deviz: any): string => {
                     <span class="font-semibold text-gray-700 !text-gray-700 mb-2">Total Manoperă:</span>
                     <span class="font-bold text-gray-800 !text-gray-800">${(deviz.total_manopera || 0).toFixed(2)} RON</span>
                 </div>
-                <div class="flex justify-between items-center border-t-2 pt-2" style="border-color: ${company.primary_color}">
-                     <span class="font-bold text-lg text-gray-800 !text-gray-800">TOTAL GENERAL:</span>
-                     <span class="font-bold text-lg" style="color: ${company.primary_color}">${(deviz.total_deviz || 0).toFixed(2)} RON</span>
+                <div class="flex justify-between items-center border-t-2 pt-2" style="border-color: ${primaryColor}">
+                 <span class="font-bold text-lg text-gray-800 !text-gray-800">TOTAL GENERAL:</span>
+                 <span class="font-bold text-lg" style="color: ${primaryColor}">${(deviz.total_deviz || 0).toFixed(2)} RON</span>
                 </div>
             </div>
         </div>
-        
-        <!-- Signatures -->
-        <div class="flex justify-between items-start mt-4 pt-4 border-t-2 border-gray-300 signatures-section">
-            <div class="flex-1 text-center">
-                <div class="font-semibold text-sm-compact text-gray-700 !text-gray-700 mb-2">Semnătura Client</div>
-                <div class="border-b-2 border-gray-400 h-8 mb-2"></div>
-                <div class="text-xs-compact text-gray-600 !text-gray-600">${client.nume || '_________________'}</div>
-            </div>
-            <div class="flex-1 text-center">
-                <div class="font-semibold text-sm-compact text-gray-700 !text-gray-700 mb-2">Semnătura Service</div>
-                <div class="border-b-2 border-gray-400 h-8 mb-2"></div>
-                <div class="text-xs-compact text-gray-600 !text-gray-600">${company.service_name}</div>
-            </div>
+    </div>
+    
+    <!-- Signatures -->
+    <div class="flex justify-between items-end mt-4 pt-4 border-t-2 border-gray-300 signatures-section space-x-12">
+        <div class="flex-1 flex flex-col items-center">
+            <div class="font-semibold text-sm-compact text-gray-700 !text-gray-700 mb-2">Semnătura Client</div>
+            ${deviz.client_signature_url 
+              ? `<div class="h-16 flex items-center justify-center mb-1"><img src="${deviz.client_signature_url}" class="max-h-full max-w-[150px] object-contain" alt="Client Signature" /></div><div class="border-b border-gray-300 w-full mb-1"></div>` 
+              : `<div class="border-b-2 border-gray-400 w-32 h-12 mb-2"></div>`
+            }
+            <div class="text-xs-compact text-gray-600 !text-gray-600">${client.nume || '_________________'}</div>
         </div>
-        
-        <!-- Certificate Section -->
-        <div class="mt-4 pt-4 border-t-2 border-gray-300 certificate-section text-justify">
-            <h3 class="text-base font-bold text-center text-gray-800 !text-gray-800 mb-3">CERTIFICAT DE CALITATE ȘI GARANȚIE</h3>
-            <div class="text-xs-compact text-gray-700 !text-gray-700 leading-relaxed space-y-2">
-                <p>În conformitate cu prevederile OUG 140/2021 și Legii 296/2004, unitatea noastră garantează lucrările executate și/sau piesele montate, după cum urmează:</p>
-                <div class="space-y-1">
-                    <p>• 3 luni pentru manoperă, de la data recepției vehiculului.</p>
-                    <p>• Pentru piesele furnizate de client unitatea noastră nu acordă garanție.</p>
-                    <p>• Garanția se acordă respectând limitele și specificațiile de exploatare corectă a autovehiculului.</p>
-                </div>
-                <p class="mt-3">Drepturile consumatorului detaliate în O.G.21/1992 nu sunt afectate de garanția oferită de unitatea noastră.</p>
+        <div class="flex-1 flex flex-col items-center">
+            <div class="font-semibold text-sm-compact text-gray-700 !text-gray-700 mb-2">Semnătura Service</div>
+            ${deviz.auto_shop_signature_url 
+              ? `<div class="h-16 flex items-center justify-center mb-1"><img src="${deviz.auto_shop_signature_url}" class="max-h-full max-w-[150px] object-contain" alt="Shop Signature" /></div><div class="border-b border-gray-300 w-full mb-1"></div>` 
+              : `<div class="border-b-2 border-gray-400 w-32 h-12 mb-2"></div>`
+            }
+            <div class="text-xs-compact text-gray-600 !text-gray-600">${company.service_name}</div>
+        </div>
+    </div>
+    
+    <!-- Certificate Section -->
+    <div class="mt-4 pt-4 border-t-2 border-gray-300 certificate-section text-justify">
+        <h3 class="text-base font-bold text-center text-gray-800 !text-gray-800 mb-3">CERTIFICAT DE CALITATE ȘI GARANȚIE</h3>
+        <div class="text-xs-compact text-gray-700 !text-gray-700 leading-relaxed space-y-2">
+            <p>În conformitate cu prevederile OUG 140/2021 și Legii 296/2004, unitatea noastră garantează lucrările executate și/sau piesele montate, după cum urmează:</p>
+            <div class="space-y-1">
+                <p>• 3 luni pentru manoperă, de la data recepției vehiculului.</p>
+                <p>• Pentru piesele furnizate de client unitatea noastră nu acordă garanție.</p>
+                <p>• Garanția se acordă respectând limitele și specificațiile de exploatare corectă a autovehiculului.</p>
             </div>
+            <p class="mt-3">Drepturile consumatorului detaliate în O.G.21/1992 nu sunt afectate de garanția oferită de unitatea noastră.</p>
         </div>
     </div>
 </body>

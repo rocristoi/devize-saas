@@ -42,7 +42,7 @@ export function ClientInfoForm({ clientInfo, onChange, onSetClient }: Props) {
       }
     };
 
-    const timeout = setTimeout(searchClient, 400);
+    const timeout = setTimeout(searchClient, 150);
     return () => clearTimeout(timeout);
   }, [clientInfo.nume, clientInfo.numarTelefon, activeField, supabase]);
 
@@ -67,7 +67,7 @@ export function ClientInfoForm({ clientInfo, onChange, onSetClient }: Props) {
 
   return (
     <div className="card-container">
-      <h3 className="text-gray-900 dark:text-gray-100 mb-4 text-lg font-semibold border-b border-gray-200 dark:border-gray-700 pb-2">
+      <h3 className="text-gray-900 dark:text-gray-100 mb-4 text-sm sm:text-lg font-semibold border-b border-gray-200 dark:border-gray-700 pb-2">
         Informații Client
       </h3>
 

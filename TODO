@@ -1,0 +1,14 @@
+
+
+
+
+
+
+
+- Functie editare subsol PDF + preturile afisate sunt in RON
+
+- interactive HTML Preview instead of PDF iframe: Loading a PDF via an iframe can be slow and varies significantly across different browsers and devices. Build a native HTML/CSS representation of the document that looks like the final A4 paper. Only generate the actual PDF when the user clicks "Download" or "Print".
+
+One-Click Status Workflows: Add quick actions directly on this screen to progress the document's lifecycle (e.g., "Mark as Approved," "Mark as Paid," or "Convert to Invoice"). This saves the user from navigating to a different dashboard or edit screen just to update the status.
+Client Approval Mode (Digital Signature): If the application is used on tablets in an auto repair shop, add an "Enter Approval Mode" button. This would strip away the navigation/admin UI and show a clean, read-only view with a canvas for the client to digitally sign the estimate on the spot.
+Split-Screen / Side-Panel Editing: Prevent context switching by opening the "Edit" interface in a side panel (drawer) or split-screen view rather than redirecting to a new route. This allows users to see the preview update instantly as they adjust parts or labor costs.

@@ -1,4 +1,25 @@
-import crypto from "crypto";
+/**
+ * lib/netopia.ts
+ *
+ * Implements the official Netopia Node.js SDK pattern:
+ * https://github.com/mobilpay/Node.js
+ * https://doc.netopia-payments.com/docs/payment-sdks/nodejs/
+ *
+ * Encryption: AES-256-CBC (NOT RC4)
+ *   - Random 32-byte symmetric key + 16-byte IV
+ *   - Symmetric key is RSA-PKCS1 encrypted with Netopia's public certificate
+ *   - `ipn_cipher: "aes-256-cbc"` tells Netopia which cipher to use on
+ *     the IPN callback back to us
+ *
+ * Form POST fields to Netopia: env_key · data · iv · cipher
+ * IPN POST fields from Netopia: env_key · data · iv · cipher
+ */
+
+import crypto from 'crypto';
+import * as forge from 'node-forge';
+import { Builder } from 'xml2js';
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface NetopiaOrder {
   orderId: string;
@@ -10,69 +31,149 @@ export interface NetopiaOrder {
   billing: {
     firstName: string;
     lastName: string;
+    address?: string;
     email: string;
     phone: string;
   };
 }
 
-// În producție, aceste fișiere se pun securizate și se citesc via fs.readFileSync
-// sau se pun ca variabile de mediu sigure.
-const PUBLIC_KEY = process.env.NETOPIA_PUBLIC_KEY || ""; 
-const SIGNATURE = process.env.NETOPIA_SIGNATURE || "XXXX-XXXX-XXXX-XXXX-XXXX";
+/** The encrypted envelope returned by encryptNetopiaPayload(). */
+export interface NetopiaEnvelope {
+  /** Base64 RSA-PKCS1-encrypted AES key */
+  env_key: string;
+  /** Base64 AES-256-CBC-encrypted XML */
+  data: string;
+  /** Base64 AES IV */
+  iv: string;
+  /** Always "aes-256-cbc" */
+  cipher: string;
+  /** Netopia gateway URL */
+  url: string;
+}
 
-export function generateNetopiaPayload(order: NetopiaOrder) {
-  // 1. Construim XML-ul conform documentației Netopia (MobilPay)
-  const xmlData = `<?xml version="1.0" encoding="utf-8"?>
-<order type="card" id="${order.orderId}" timestamp="${Date.now()}">
-  <signature>${SIGNATURE}</signature>
-  <url>
-    <return>${order.returnUrl}</return>
-    <confirm>${order.confirmUrl}</confirm>
-  </url>
-  <invoice currency="${order.currency}" amount="${order.amount.toFixed(2)}">
-    <details>${order.details}</details>
-    <contact_info>
-      <billing type="person">
-        <first_name>${order.billing.firstName}</first_name>
-        <last_name>${order.billing.lastName}</last_name>
-        <email>${order.billing.email}</email>
-        <mobile_phone>${order.billing.phone}</mobile_phone>
-      </billing>
-    </contact_info>
-  </invoice>
-</order>`;
+// ─── Constants ────────────────────────────────────────────────────────────────
 
-  if (!PUBLIC_KEY) {
-    console.warn("[NETOPIA] PUBLIC_KEY nu e configurat. Va fi returnat un mock.");
-    // Intoarcem date mockuite daca nu avem cheile configurate pt Dev
+const CIPHER = 'aes-256-cbc' as const;
+const PUBLIC_CERT_PEM = process.env.NETOPIA_PUBLIC_KEY ?? '';
+const PRIVATE_KEY_PEM  = process.env.NETOPIA_PRIVATE_KEY ?? '';
+const SIGNATURE = process.env.NETOPIA_SIGNATURE ?? 'XXXX-XXXX-XXXX-XXXX-XXXX';
+const IS_SANDBOX = process.env.NODE_ENV !== 'production';
+
+const NETOPIA_URL = IS_SANDBOX
+  ? 'https://sandboxsecure.mobilpay.ro'
+  : 'https://secure.mobilpay.ro';
+
+// ─── Encrypt ──────────────────────────────────────────────────────────────────
+
+/**
+ * Encrypts a payment order and returns the envelope to POST to Netopia.
+ * Matches the official mobilpay/Node.js encrypt.js implementation exactly.
+ */
+export function encryptNetopiaPayload(order: NetopiaOrder): NetopiaEnvelope {
+  if (!PUBLIC_CERT_PEM) {
+    console.warn('[NETOPIA] PUBLIC_KEY not configured — returning mock envelope');
     return {
-      envKey: "MOCK_ENV_KEY",
-      data: Buffer.from(xmlData).toString('base64'),
-      url: "https://sandboxsecure.mobilpay.ro"
+      env_key: 'MOCK_ENV_KEY',
+      data: Buffer.from('<mock/>').toString('base64'),
+      iv: Buffer.alloc(16).toString('base64'),
+      cipher: CIPHER,
+      url: NETOPIA_URL,
     };
   }
 
-  try {
-    // 2. Criptare RC4 a XML-ului (Netopia cere generarea unei chei RC4 aleatorii de 16-32 bytes)
-    const rc4Key = crypto.randomBytes(32);
-    // RC4 Cipher (deprecated în Node.js, dar încă folosit de Netopia în varianta legacy. Recomandat API v2 REST, dar XML e cel clasic)
-    const cipher = crypto.createCipheriv("rc4", rc4Key, "");
-    let encryptedData = cipher.update(xmlData, "utf8", "base64");
-    encryptedData += cipher.final("base64");
+  // 1. Build the XML object (mirrors official order.js structure exactly)
+  const xmlObj = {
+    order: {
+      $: {
+        id: order.orderId,
+        timestamp: Date.now(),  // official SDK uses ms here
+        type: 'card',
+      },
+      signature: SIGNATURE,
+      url: {
+        return: order.returnUrl,
+        confirm: order.confirmUrl,
+      },
+      invoice: {
+        $: {
+          currency: order.currency,
+          amount: order.amount.toFixed(2),
+        },
+        details: order.details,
+        contact_info: {
+          billing: {
+            $: { type: 'person' },
+            first_name: order.billing.firstName,
+            last_name: order.billing.lastName,
+            address: order.billing.address ?? '',
+            email: order.billing.email,
+            mobile_phone: order.billing.phone,
+          },
+        },
+      },
+      ipn_cipher: CIPHER,
+    },
+  };
 
-    // 3. Criptare cheie RC4 cu cheia publică RSA de la Netopia
-    const encryptedKey = crypto.publicEncrypt({
-      key: PUBLIC_KEY,
-      padding: crypto.constants.RSA_PKCS1_PADDING
-    }, rc4Key).toString('base64');
+  const builder = new Builder({ cdata: true });
+  const xml = builder.buildObject(xmlObj);
 
-    return {
-      envKey: encryptedKey,
-      data: encryptedData,
-      url: "https://secure.mobilpay.ro" // sau sandboxsecure.mobilpay.ro pentru teste
-    };
-  } catch (error) {
-    console.error("Netopia Encryption Error:", error);
-    throw new Error("Eroare la criptarea datelor Netopia.");
+  // 2. AES-256-CBC encrypt the XML
+  const aesKey = crypto.randomBytes(32);
+  const iv     = crypto.randomBytes(16);
+  const c      = crypto.createCipheriv(CIPHER, aesKey, iv);
+  let encrypted = c.update(xml, 'utf8', 'base64');
+  encrypted    += c.final('base64');
+
+  // 3. RSA-PKCS1 encrypt the AES key using node-forge
+  //    node-forge handles "-----BEGIN CERTIFICATE-----" the same way
+  //    PHP's openssl_public_encrypt does — no manual key extraction needed.
+  const forgeCert      = forge.pki.certificateFromPem(PUBLIC_CERT_PEM);
+  const forgePubKey    = forgeCert.publicKey as forge.pki.rsa.PublicKey;
+  const encryptedKeyBin = forgePubKey.encrypt(
+    aesKey.toString('binary'),
+    'RSAES-PKCS1-V1_5',
+  );
+
+  return {
+    env_key: Buffer.from(encryptedKeyBin, 'binary').toString('base64'),
+    data:    encrypted,
+    iv:      iv.toString('base64'),
+    cipher:  CIPHER,
+    url:     NETOPIA_URL,
+  };
+}
+
+// ─── Decrypt ──────────────────────────────────────────────────────────────────
+
+/**
+ * Decrypts an IPN payload from Netopia.
+ * Matches the official mobilpay/Node.js encrypt.js decrypt() implementation.
+ */
+export function decryptNetopiaIpn(
+  env_key: string,
+  data:    string,
+  iv:      string,
+  cipher:  string,
+): string {
+  if (!PRIVATE_KEY_PEM) {
+    throw new Error('[NETOPIA] NETOPIA_PRIVATE_KEY is not configured');
   }
+
+  // 1. RSA-decrypt the AES key (node-forge, matches official SDK)
+  const forgePrivKey    = forge.pki.privateKeyFromPem(PRIVATE_KEY_PEM);
+  const encKeyBin       = Buffer.from(env_key, 'base64').toString('binary');
+  const aesKeyBin       = forgePrivKey.decrypt(encKeyBin, 'RSAES-PKCS1-V1_5');
+  const aesKey          = Buffer.from(aesKeyBin, 'binary');
+
+  // 2. AES-CBC decrypt the XML
+  const decipher = crypto.createDecipheriv(
+    cipher as Parameters<typeof crypto.createDecipheriv>[0],
+    aesKey,
+    Buffer.from(iv, 'base64'),
+  );
+  let xml  = decipher.update(data, 'base64', 'utf8');
+  xml     += decipher.final('utf8');
+
+  return xml;
 }

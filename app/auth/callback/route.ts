@@ -5,8 +5,10 @@ import { createClient } from '@/lib/supabase/server'
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
+  const type = searchParams.get('type')
   // if "next" is in param, use it as the redirect URL
-  const next = searchParams.get('next') ?? '/'
+  // For password recovery, always redirect to /reset-password
+  const next = type === 'recovery' ? '/reset-password' : (searchParams.get('next') ?? '/')
 
   if (code) {
     const supabase = await createClient()

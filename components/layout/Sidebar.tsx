@@ -10,7 +10,10 @@ import {
   Settings, 
   PackageSearch,
   CreditCard,
-  LayoutDashboard
+  LayoutDashboard,
+  Search,
+  HelpCircle,
+  ReceiptText,
 } from "lucide-react";
 import { useSidebar } from "./SidebarProvider";
 import { cn } from "@/lib/utils";
@@ -34,7 +37,10 @@ export function Sidebar() {
     { name: "Deviz Nou", href: "/devize/nou", icon: <FileText size={20} /> },
     { name: "Istoric Devize", href: "/devize", icon: <History size={20} /> },
     { name: "Gestiune Piese", href: "/piese", icon: <PackageSearch size={20} /> },
+    { name: "Căutare", href: "/cautare", icon: <Search size={20} /> },
     { name: "Abonament", href: "/abonament", icon: <CreditCard size={20} /> },
+    { name: "Facturi", href: "/facturi", icon: <ReceiptText size={20} /> },
+    { name: "Suport", href: "/suport", icon: <HelpCircle size={20} /> },
     { name: "Setări", href: "/setari", icon: <Settings size={20} /> },
   ];
 
