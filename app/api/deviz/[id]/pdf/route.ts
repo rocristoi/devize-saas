@@ -30,9 +30,10 @@ export async function GET(
     }
 
     const html = generateWebDeviz(deviz);
-    const filename = `${deviz.companies?.pdf_filename || "Deviz"}_${
+    const rawFilename = `${deviz.companies?.pdf_filename || "Deviz"}_${
       deviz.series || deviz.id || "Nou"
     }.pdf`;
+    const filename = rawFilename.replace(/[^\w\-. ]/g, "_").substring(0, 100);
 
     const PDF_SERVICE_URL = process.env.PDF_SERVICE_URL || "http://localhost:3001";
 
@@ -57,7 +58,7 @@ export async function GET(
       headers: {
         "Content-Type": "application/pdf",
         // inline disposition so it previews in browser
-        "Content-Disposition": `inline; filename="${filename}"`,
+        "Content-Disposition": `inline; filename*=UTF-8''${encodeURIComponent(filename)}`,
       },
     });
   } catch (error) {

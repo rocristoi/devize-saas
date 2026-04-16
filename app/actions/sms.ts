@@ -7,6 +7,21 @@ export async function sendSmsFormAction(
   phone: string,
   message: string
 ) {
+  // Validate inputs early
+  if (!devizId || typeof devizId !== 'string') {
+    return { success: false, error: "ID deviz invalid." };
+  }
+  if (!phone || typeof phone !== 'string' || phone.trim().length === 0) {
+    return { success: false, error: "Număr de telefon invalid." };
+  }
+  const MAX_SMS_LENGTH = 640; // ~4 SMS segments
+  if (!message || typeof message !== 'string' || message.trim().length === 0) {
+    return { success: false, error: "Mesajul nu poate fi gol." };
+  }
+  if (message.length > MAX_SMS_LENGTH) {
+    return { success: false, error: `Mesajul este prea lung. Maxim ${MAX_SMS_LENGTH} caractere.` };
+  }
+
   const supabase = await createClient();
   const { data: userData } = await supabase.auth.getUser();
   if (!userData?.user) {

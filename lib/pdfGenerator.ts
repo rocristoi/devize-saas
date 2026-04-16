@@ -1,6 +1,22 @@
 import { format } from "date-fns";
 import { ro } from "date-fns/locale";
 
+function escapeHtml(str: string | number | null | undefined): string {
+  if (str === null || str === undefined || str === '') return '-';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function escapeUrl(url: string | null | undefined): string {
+  if (!url) return '';
+  if (!/^https?:\/\//i.test(url)) return '';
+  return url.replace(/"/g, '%22');
+}
+
 // Make sure to define the interfaces based on what Supabase returns
 export const generateWebDeviz = (deviz: any): string => {
   // Safe parsing dates
@@ -115,21 +131,21 @@ export const generateWebDeviz = (deviz: any): string => {
         <div class="flex flex-row items-center justify-between text-black mb-2 avoid-break">
             <div class="flex items-start flex-col">
                 <h1 class="text-sm font-bold text-gray-800 !text-gray-800">Deviz Auto</h1>
-                <h2 class="text-xs font-medium text-gray-500 !text-gray-500">Referință: #${deviz.series || '------'}</h2>
+                <h2 class="text-xs font-medium text-gray-500 !text-gray-500">Referință: #${escapeHtml(deviz.series || '------')}</h2>
             </div>
-            ${company.logo_url ? `<img src="${company.logo_url}" alt="${company.service_name}" style="height: 25px; max-width: 120px; object-fit: contain;"/>` : `<div style="font-weight:bold; font-size:18px;">${company.service_name}</div>`}
+            ${escapeUrl(company.logo_url) ? `<img src="${escapeUrl(company.logo_url)}" alt="${escapeHtml(company.service_name)}" style="height: 25px; max-width: 120px; object-fit: contain;"/>` : `<div style="font-weight:bold; font-size:18px;">${escapeHtml(company.service_name)}</div>`}
         </div>
         
         <!-- Company and Client Info Section -->
         <div class="flex justify-between items-start mb-3 gap-4 avoid-break">
             <div class="flex-1 max-w-[45%]">
                 <div class="mb-2">
-                    <h1 class="text-base font-bold text-gray-800 !text-gray-800 border-b-2 pb-1 mb-1 w-full" style="border-color: ${primaryColor}">${company.pdf_header_title || 'DEVIZ REPARAȚIE'}</h1>
+                    <h1 class="text-base font-bold text-gray-800 !text-gray-800 border-b-2 pb-1 mb-1 w-full" style="border-color: ${primaryColor}">${escapeHtml(company.pdf_header_title) || 'DEVIZ REPARAȚIE'}</h1>
                     <div class="text-xs-compact text-gray-600 !text-gray-600 space-y-0.5">
-                        <div class="font-semibold">${company.service_name}</div>
-                        <div>${company.address}</div>
-                        <div>CUI/CIF: ${company.cui_cif} | Reg. Com.: ${company.reg_com || '-'}</div>
-                        <div>Tel: ${company.phone || '-'} | Email: ${company.email || '-'}</div>
+                        <div class="font-semibold">${escapeHtml(company.service_name)}</div>
+                        <div>${escapeHtml(company.address)}</div>
+                        <div>CUI/CIF: ${escapeHtml(company.cui_cif)} | Reg. Com.: ${escapeHtml(company.reg_com)}</div>
+                        <div>Tel: ${escapeHtml(company.phone)} | Email: ${escapeHtml(company.email)}</div>
                     </div>
                 </div>
             </div>
@@ -139,19 +155,19 @@ export const generateWebDeviz = (deviz: any): string => {
                 <div class="text-xs-compact space-y-0.5">
                     <div class="flex">
                         <span class="font-semibold text-gray-600 !text-gray-600 w-20">Nume/Ales:</span>
-                        <span class="text-gray-800 !text-gray-800">${client.nume || '-'}</span>
+                        <span class="text-gray-800 !text-gray-800">${escapeHtml(client.nume)}</span>
                     </div>
                     <div class="flex">
                         <span class="font-semibold text-gray-600 !text-gray-600 w-20">CUI/CNP:</span>
-                        <span class="text-gray-800 !text-gray-800">${client.cui_cnp || '-'}</span>
+                        <span class="text-gray-800 !text-gray-800">${escapeHtml(client.cui_cnp)}</span>
                     </div>
                     <div class="flex">
                         <span class="font-semibold text-gray-600 !text-gray-600 w-20">Adresă:</span>
-                        <span class="text-gray-800 !text-gray-800">${client.strada || ''} ${client.locatie || ''}</span>
+                        <span class="text-gray-800 !text-gray-800">${escapeHtml(client.strada)} ${escapeHtml(client.locatie)}</span>
                     </div>
                     <div class="flex">
                         <span class="font-semibold text-gray-600 !text-gray-600 w-20">Telefon:</span>
-                        <span class="text-gray-800 !text-gray-800">${client.telefon || '-'}</span>
+                        <span class="text-gray-800 !text-gray-800">${escapeHtml(client.telefon)}</span>
                     </div>
                 </div>
             </div>
@@ -164,11 +180,11 @@ export const generateWebDeviz = (deviz: any): string => {
                 <div class="text-xs-compact space-y-0.5">
                     <div class="flex">
                         <span class="font-semibold text-gray-600 !text-gray-600 w-20">Motiv intrare:</span>
-                        <span class="text-gray-800 !text-gray-800 flex-1">${deviz.motiv_intrare || '-'}</span>
+                        <span class="text-gray-800 !text-gray-800 flex-1">${escapeHtml(deviz.motiv_intrare)}</span>
                     </div>
                     <div class="flex">
                         <span class="font-semibold text-gray-600 !text-gray-600 w-20">Observații:</span>
-                        <span class="text-gray-800 !text-gray-800 flex-1">${deviz.observatii || '-'}</span>
+                        <span class="text-gray-800 !text-gray-800 flex-1">${escapeHtml(deviz.observatii)}</span>
                     </div>
                     <div class="flex">
                         <span class="font-semibold text-gray-600 !text-gray-600 w-20">Dată intrare:</span>
@@ -188,27 +204,27 @@ export const generateWebDeviz = (deviz: any): string => {
                 <div class="text-xs-compact space-y-0.5">
                     <div class="flex">
                         <span class="font-semibold text-gray-600 !text-gray-600 w-20">Marcă/Model:</span>
-                        <span class="text-gray-800 !text-gray-800">${vehicle.marca || '-'} ${vehicle.model || '-'}</span>
+                        <span class="text-gray-800 !text-gray-800">${escapeHtml(vehicle.marca)} ${escapeHtml(vehicle.model)}</span>
                     </div>
                     <div class="flex">
                         <span class="font-semibold text-gray-600 !text-gray-600 w-20">Nr. înmat.:</span>
-                        <span class="text-gray-800 !text-gray-800">${vehicle.numar_inmatriculare || '-'}</span>
+                        <span class="text-gray-800 !text-gray-800">${escapeHtml(vehicle.numar_inmatriculare)}</span>
                     </div>
                     <div class="flex">
                         <span class="font-semibold text-gray-600 !text-gray-600 w-20">Serie șasiu:</span>
-                        <span class="text-gray-800 !text-gray-800">${vehicle.seria_sasiu || '-'}</span>
+                        <span class="text-gray-800 !text-gray-800">${escapeHtml(vehicle.seria_sasiu)}</span>
                     </div>
                     <div class="flex">
                         <span class="font-semibold text-gray-600 !text-gray-600 w-20">Nivel carburant:</span>
-                        <span class="text-gray-800 !text-gray-800">${deviz.nivel_carburant ? `${deviz.nivel_carburant}` : '-'}</span>
+                        <span class="text-gray-800 !text-gray-800">${deviz.nivel_carburant ? escapeHtml(String(deviz.nivel_carburant)) : '-'}</span>
                     </div>
                     <div class="flex">
                         <span class="font-semibold text-gray-600 !text-gray-600 w-20">Cap. cil./An:</span>
-                        <span class="text-gray-800 !text-gray-800">${vehicle.capacitate_cilindrica || '-'} cm³ / ${vehicle.an_fabricatie || '-'}</span>
+                        <span class="text-gray-800 !text-gray-800">${escapeHtml(vehicle.capacitate_cilindrica)} cm³ / ${escapeHtml(vehicle.an_fabricatie)}</span>
                     </div>
                     <div class="flex">
                         <span class="font-semibold text-gray-600 !text-gray-600 w-20">Km:</span>
-                        <span class="text-gray-800 !text-gray-800">${deviz.km_intrare || '-'}</span>
+                        <span class="text-gray-800 !text-gray-800">${escapeHtml(deviz.km_intrare)}</span>
                     </div>
                 </div>
             </div>
@@ -234,9 +250,9 @@ export const generateWebDeviz = (deviz: any): string => {
                     <tbody>
                         ${parts.map((part: any, index: number) => `
                             <tr class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} table-row">
-                                <td class="border border-gray-300 px-2 py-1 !text-gray-900">${part.cod_piesa || '-'}</td>
-                                <td class="border border-gray-300 px-2 py-1 !text-gray-900">${part.nume_piesa || '-'}</td>
-                                <td class="border border-gray-300 px-2 py-1 text-center !text-gray-900">${part.cantitate || '-'}</td>
+                                <td class="border border-gray-300 px-2 py-1 !text-gray-900">${escapeHtml(part.cod_piesa)}</td>
+                                <td class="border border-gray-300 px-2 py-1 !text-gray-900">${escapeHtml(part.nume_piesa)}</td>
+                                <td class="border border-gray-300 px-2 py-1 text-center !text-gray-900">${escapeHtml(part.cantitate)}</td>
                                 <td class="border border-gray-300 px-2 py-1 text-right !text-gray-900">${(part.pret_unitar || 0).toFixed(2)}</td>
                                 <td class="border border-gray-300 px-2 py-1 text-right !text-gray-900">${part.discount_percentage ? part.discount_percentage.toFixed(2) : '-'}</td>
                                 <td class="border border-gray-300 px-2 py-1 text-right font-semibold !text-gray-900">${(part.total || 0).toFixed(2)}</td>
@@ -267,8 +283,8 @@ export const generateWebDeviz = (deviz: any): string => {
                     <tbody>
                         ${labor.map((lab: any, index: number) => `
                             <tr class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} table-row">
-                                <td class="border border-gray-300 px-2 py-1 !text-gray-900">${lab.operatiune || '-'}</td>
-                                <td class="border border-gray-300 px-2 py-1 text-center !text-gray-900">${lab.durata || '-'}</td>
+                                <td class="border border-gray-300 px-2 py-1 !text-gray-900">${escapeHtml(lab.operatiune)}</td>
+                                <td class="border border-gray-300 px-2 py-1 text-center !text-gray-900">${escapeHtml(lab.durata)}</td>
                                 <td class="border border-gray-300 px-2 py-1 text-right !text-gray-900">${(lab.pret_orar || 0).toFixed(2)}</td>
                                 <td class="border border-gray-300 px-2 py-1 text-right !text-gray-900">${lab.discount_percentage ? lab.discount_percentage.toFixed(2) : '-'}</td>
                                 <td class="border border-gray-300 px-2 py-1 text-right font-semibold !text-gray-900">${(lab.total || 0).toFixed(2)}</td>
@@ -304,18 +320,18 @@ export const generateWebDeviz = (deviz: any): string => {
         <div class="flex-1 flex flex-col items-center">
             <div class="font-semibold text-sm-compact text-gray-700 !text-gray-700 mb-2">Semnătura Client</div>
             ${deviz.client_signature_url 
-              ? `<div class="h-16 flex items-center justify-center mb-1"><img src="${deviz.client_signature_url}" class="max-h-full max-w-[150px] object-contain" alt="Client Signature" /></div><div class="border-b border-gray-300 w-full mb-1"></div>` 
+              ? `<div class="h-16 flex items-center justify-center mb-1"><img src="${escapeUrl(deviz.client_signature_url)}" class="max-h-full max-w-[150px] object-contain" alt="Client Signature" /></div><div class="border-b border-gray-300 w-full mb-1"></div>` 
               : `<div class="border-b-2 border-gray-400 w-32 h-12 mb-2"></div>`
             }
-            <div class="text-xs-compact text-gray-600 !text-gray-600">${client.nume || '_________________'}</div>
+            <div class="text-xs-compact text-gray-600 !text-gray-600">${escapeHtml(client.nume) !== '-' ? escapeHtml(client.nume) : '_________________'}</div>
         </div>
         <div class="flex-1 flex flex-col items-center">
             <div class="font-semibold text-sm-compact text-gray-700 !text-gray-700 mb-2">Semnătura Service</div>
             ${deviz.auto_shop_signature_url 
-              ? `<div class="h-16 flex items-center justify-center mb-1"><img src="${deviz.auto_shop_signature_url}" class="max-h-full max-w-[150px] object-contain" alt="Shop Signature" /></div><div class="border-b border-gray-300 w-full mb-1"></div>` 
+              ? `<div class="h-16 flex items-center justify-center mb-1"><img src="${escapeUrl(deviz.auto_shop_signature_url)}" class="max-h-full max-w-[150px] object-contain" alt="Shop Signature" /></div><div class="border-b border-gray-300 w-full mb-1"></div>` 
               : `<div class="border-b-2 border-gray-400 w-32 h-12 mb-2"></div>`
             }
-            <div class="text-xs-compact text-gray-600 !text-gray-600">${company.service_name}</div>
+            <div class="text-xs-compact text-gray-600 !text-gray-600">${escapeHtml(company.service_name)}</div>
         </div>
     </div>
     

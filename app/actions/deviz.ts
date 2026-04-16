@@ -110,23 +110,13 @@ export async function saveDeviz(data: {
     }
 
     // 5. Create Deviz record
-    // Sequence generation: get current counter, increment, update
-    const { data: companyData, error: companyErr } = await supabase
-      .from('companies')
-      .select('current_series_counter')
-      .eq('id', companyId)
-      .single();
+    // Atomic counter increment to prevent race conditions under concurrent load
+    const { data: counterData, error: counterErr } = await supabase
+      .rpc('increment_series_counter', { company_id_arg: companyId });
 
-    if (companyErr) throw companyErr;
+    if (counterErr) throw counterErr;
 
-    const currentCounter = companyData.current_series_counter || 0;
-    const nextCounter = currentCounter + 1;
-
-    // Update the counter on the company immediately
-    await supabase
-      .from('companies')
-      .update({ current_series_counter: nextCounter })
-      .eq('id', companyId);
+    const nextCounter = counterData as number;
 
     const generatedSeries = String(nextCounter).padStart(6, '0');
 

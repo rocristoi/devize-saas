@@ -70,10 +70,31 @@ export async function completeOnboarding(formData: FormData): Promise<Onboarding
   // ── Upload logo ──────────────────────────────────────────────────────────────
   let logoUrl: string | null = null
   if (logoFile && logoFile.size > 0) {
+    const ALLOWED_LOGO_MIME = ['image/jpeg', 'image/png', 'image/webp']
+    const MAX_LOGO_SIZE = 2 * 1024 * 1024 // 2 MB
+
+    if (!ALLOWED_LOGO_MIME.includes(logoFile.type)) {
+      return { error: 'Tip fișier invalid. Sunt acceptate doar JPEG, PNG și WebP.' }
+    }
+    if (logoFile.size > MAX_LOGO_SIZE) {
+      return { error: 'Fișierul este prea mare. Dimensiunea maximă este 2 MB.' }
+    }
+
     const arrayBuffer = await logoFile.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer)
-    const fileExt = logoFile.name.split('.').pop()
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+
+    // Validate magic bytes to prevent MIME-type spoofing
+    const magicBytes = buffer.slice(0, 4)
+    const isPng = magicBytes[0] === 0x89 && magicBytes[1] === 0x50 && magicBytes[2] === 0x4e && magicBytes[3] === 0x47
+    const isJpeg = magicBytes[0] === 0xff && magicBytes[1] === 0xd8
+    const isWebp = buffer.slice(0, 12).toString('ascii', 8, 12) === 'WEBP'
+    if (!isPng && !isJpeg && !isWebp) {
+      return { error: 'Conținutul fișierului nu corespunde tipului declarat.' }
+    }
+
+    // Use only the validated extension from the actual content
+    const safeExt = isPng ? 'png' : isJpeg ? 'jpg' : 'webp'
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${safeExt}`
     const filePath = `${user.id}/${fileName}`
 
     const { error: uploadError } = await adminAuthClient.storage

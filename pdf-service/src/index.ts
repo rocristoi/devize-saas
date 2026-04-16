@@ -11,6 +11,22 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
+// Service-to-service authentication middleware
+app.use((req: Request, res: Response, next) => {
+  const secret = process.env.PDF_SERVICE_SECRET;
+  if (!secret) {
+    console.error('PDF_SERVICE_SECRET is not set');
+    res.status(500).json({ error: 'Server misconfiguration' });
+    return;
+  }
+  const provided = req.headers['x-pdf-service-secret'];
+  if (!provided || provided !== secret) {
+    res.status(401).json({ error: 'Unauthorized' });
+    return;
+  }
+  next();
+});
+
 app.post('/generate-pdf', async (req: Request, res: Response): Promise<void> => {
   const { html, filename } = req.body;
 

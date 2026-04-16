@@ -1,24 +1,32 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js"; // Need service role to bypass RLS!
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
-export async function POST(req: Request) {
+const MAX_PAYLOAD_BYTES = 500_000; // 500 KB raw request body
+const MAX_DECODED_BYTES = 300_000; // 300 KB decoded PNG
+const PNG_MAGIC = Buffer.from([0x89, 0x50, 0x4e, 0x47]);
+
+export async function POST(req: NextRequest) {
   try {
+    // Enforce payload size before reading body into memory
+    const contentLength = parseInt(req.headers.get("content-length") ?? "0", 10);
+    if (contentLength > MAX_PAYLOAD_BYTES) {
+      return NextResponse.json({ error: "Payload prea mare" }, { status: 413 });
+    }
+
     const { token, signature_data } = await req.json();
 
     if (!token || !signature_data) {
       return NextResponse.json({ error: "Lipsă token sau date semnătură" }, { status: 400 });
     }
 
-    // Create a Supabase admin client to bypass RLS for public token access
     const dbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const dbKey = process.env.SUPABASE_SERVICE_ROLE_KEY!; // use service role!
+    const dbKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-    // If no service role, we can use anon, but only if we add an RLS policy for anonymous updates by token
     if (!dbKey) {
-        console.error("SUPABASE_SERVICE_ROLE_KEY missing - required for anonymous deviz signing");
-        return NextResponse.json({ error: "Eroare de configurare server" }, { status: 500 });
+      console.error("SUPABASE_SERVICE_ROLE_KEY missing");
+      return NextResponse.json({ error: "Eroare de configurare server" }, { status: 500 });
     }
-    
+
     const adminSupabase = createClient(dbUrl, dbKey);
 
     const { data: deviz, error: fetchErr } = await adminSupabase
@@ -35,10 +43,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Devizul este deja finalizat" }, { status: 400 });
     }
 
-    // Decode base64 to buffer
+    // Decode base64 and validate it is actually a PNG by magic bytes
     const base64Data = signature_data.replace(/^data:image\/\w+;base64,/, "");
     const buffer = Buffer.from(base64Data, 'base64');
-    
+
+    if (buffer.length > MAX_DECODED_BYTES) {
+      return NextResponse.json({ error: "Imaginea semnăturii este prea mare" }, { status: 413 });
+    }
+    if (!buffer.slice(0, 4).equals(PNG_MAGIC)) {
+      return NextResponse.json({ error: "Format imagine invalid" }, { status: 400 });
+    }
+
     const fileName = `client_${deviz.id}_${Date.now()}.png`;
 
     const { error: uploadErr } = await adminSupabase.storage
@@ -76,7 +91,7 @@ export async function POST(req: Request) {
     // just changing state enables PDF stamping.
     return NextResponse.json({ success: true });
 
-  } catch (error: unknown) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Unknown error" }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "Eroare internă server" }, { status: 500 });
   }
 }
