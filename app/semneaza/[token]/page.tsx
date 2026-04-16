@@ -2,6 +2,7 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { notFound } from "next/navigation";
 import ClientSignatureForm from "./ClientSignatureForm";
 import { PdfIframeViewer } from "@/components/ui/PdfIframeViewer";
+import Image from "next/image";
 
 export default async function SemneazaDevizPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
@@ -36,7 +37,9 @@ export default async function SemneazaDevizPage({ params }: { params: Promise<{ 
               <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
                       {deviz.companies?.logo_url && (
-                          <img src={deviz.companies.logo_url} alt="Logo Service" className="h-8 mb-4 object-contain" />
+                          <div className="relative h-8 mb-4 w-auto drop-shadow-sm flex items-start justify-start">
+                              <Image src={deviz.companies.logo_url} alt="Logo Service" width={150} height={32} className="h-full w-auto object-contain" />
+                          </div>
                       )}
                       <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
                           Deviz #{deviz.series}
@@ -117,7 +120,9 @@ export default async function SemneazaDevizPage({ params }: { params: Promise<{ 
             <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     {deviz.companies?.logo_url && (
-                        <img src={deviz.companies.logo_url} alt="Logo Service" className="h-8 mb-4 object-contain" />
+                        <div className="relative h-8 mb-4 w-auto drop-shadow-sm flex items-start justify-start">
+                             <Image src={deviz.companies.logo_url} alt="Logo Service" width={150} height={32} className="h-full w-auto object-contain" />
+                        </div>
                     )}
                     <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
                         Deviz #{deviz.series}

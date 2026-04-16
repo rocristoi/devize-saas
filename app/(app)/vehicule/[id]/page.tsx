@@ -123,8 +123,6 @@ export default function VehicleDetailsPage() {
   const totalParts = devize.reduce((acc, d) => acc + (d.total_piese || 0), 0);
   const totalLabor = devize.reduce((acc, d) => acc + (d.total_manopera || 0), 0);
   
-  const visits = devize.length;
-  const avgSpend = visits > 0 ? (totalSpent / visits).toFixed(2) : 0;
 
   // Formatting km
   const getKmValue = (kmStr: string | undefined): number => {
@@ -136,7 +134,7 @@ export default function VehicleDetailsPage() {
   // Preparation for mileage chart
   let lastKm = 0;
   let hasKmAnomaly = false;
-  const chartData = ascSortedDevize.map((d, index) => {
+  const chartData = ascSortedDevize.map((d) => {
     const km = getKmValue(d.km_intrare);
     let isAnomaly = false;
     if (km > 0) {
@@ -156,7 +154,7 @@ export default function VehicleDetailsPage() {
     };
   }).filter(d => d.km !== null);
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: { payload: { fullDate: string; km: number; series: string; isAnomaly: boolean; id: string } }[] }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
@@ -327,7 +325,8 @@ export default function VehicleDetailsPage() {
                   strokeWidth={2}
                   fillOpacity={1} 
                   fill="url(#colorKm)" 
-                  dot={(props: any) => {
+                  dot={(props: { cx?: number; cy?: number; payload?: { id: string; isAnomaly: boolean } }) => {
+                    if (!props.cx || !props.cy || !props.payload) return null;
                     const { cx, cy, payload } = props;
                     return payload.isAnomaly ? (
                       <circle key={`dot-${payload.id}`} cx={cx} cy={cy} r={4} stroke="#f43f5e" strokeWidth={2} fill="#fff" className="transition-all duration-300" />
@@ -335,7 +334,8 @@ export default function VehicleDetailsPage() {
                       <circle key={`dot-${payload.id}`} cx={cx} cy={cy} r={3} stroke="#4f46e5" strokeWidth={2} fill="#fff" className="transition-all duration-300" />
                     );
                   }}
-                  activeDot={(props: any) => {
+                  activeDot={(props: { cx?: number; cy?: number; payload?: { isAnomaly: boolean } }) => {
+                    if (!props.cx || !props.cy || !props.payload) return null;
                     const { cx, cy, payload } = props;
                     return (
                       <circle 

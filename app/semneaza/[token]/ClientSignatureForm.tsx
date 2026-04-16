@@ -3,12 +3,10 @@
 import { useState } from "react";
 import { SignaturePad } from "@/components/ui/SignaturePad";
 import { toast } from "sonner";
-import { createClient } from "@/lib/supabase/client";
 
 export default function ClientSignatureForm({ devizId, token }: { devizId: string, token: string }) {
   const [signatureData, setSignatureData] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const supabase = createClient();
 
   const handleFinalize = async () => {
     if (!signatureData) {
@@ -31,7 +29,7 @@ export default function ClientSignatureForm({ devizId, token }: { devizId: strin
         window.location.reload();
       }
 
-    } catch (err) {
+    } catch {
       toast.error("Eroare neașteptată.");
     } finally {
       setSaving(false);

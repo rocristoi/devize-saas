@@ -5,25 +5,18 @@ import {
   TrendingUp, 
   Users, 
   FileText, 
-  CreditCard,
-  ArrowRight,
   ShieldCheck,
-  Zap,
-  Activity,
   Plus,
   Bell,
   Calendar,
   X,
   ChevronRight,
-  Car,
-  Key,
   Wrench,
-  Settings
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { PageHeader } from "@/components/ui/PageHeader";
 
 export interface Announcement {
   id: string;
@@ -57,6 +50,7 @@ export function DashboardClient({
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -135,7 +129,7 @@ export function DashboardClient({
               >
                 <div className="relative w-full h-full flex flex-col items-center justify-center gap-4 text-zinc-900 dark:text-white">
                   {/* Use car.svg image instead */}
-                  <img src="/car.svg" alt="Car" className="w-24 h-24" />
+                  <Image src="/car.svg" alt="Car" width={96} height={96} />
                 </div>
               </motion.div>
 
@@ -252,11 +246,12 @@ export function DashboardClient({
                 className="group flex flex-col cursor-pointer border-b border-transparent hover:border-gray-200 dark:hover:border-gray-800 pb-4 transition-colors"
               >
                 {announcement.image_url && (
-                  <div className="aspect-[16/9] w-full overflow-hidden bg-gray-100 dark:bg-gray-900 rounded-lg mb-4 border border-gray-200 dark:border-gray-800">
-                    <img 
+                  <div className="aspect-[16/9] w-full overflow-hidden bg-gray-100 dark:bg-gray-900 rounded-lg mb-4 border border-gray-200 dark:border-gray-800 relative">
+                    <Image 
                       src={announcement.image_url} 
-                      alt={announcement.title} 
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      alt={announcement.title}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                   </div>
                 )}
@@ -315,11 +310,12 @@ export function DashboardClient({
                 
                 <div className="overflow-y-auto px-6 py-6">
                   {selectedAnnouncement.image_url && (
-                    <div className="w-full h-48 sm:h-64 rounded-xl overflow-hidden mb-6">
-                      <img 
+                    <div className="w-full h-48 sm:h-64 rounded-xl overflow-hidden mb-6 relative">
+                      <Image 
                         src={selectedAnnouncement.image_url} 
-                        alt={selectedAnnouncement.title} 
-                        className="w-full h-full object-cover"
+                        alt={selectedAnnouncement.title}
+                        fill
+                        className="object-cover"
                       />
                     </div>
                   )}

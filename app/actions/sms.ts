@@ -132,7 +132,7 @@ export async function sendSmsFormAction(
       .eq('id', profile.company_id);
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("SMS send error:", error);
     
     const { error: auditErr } = await supabase.from('sms_audit').insert({
@@ -140,7 +140,8 @@ export async function sendSmsFormAction(
       company_id: profile.company_id,
       phone: cleaned,
       status: 'error',
-      error_message: "An error occurred while sending the SMS."
+      error_message: "An error occurred while sending the SMS.",
+      details: error instanceof Error ? error.message : String(error)
     });
 
     if (auditErr) {

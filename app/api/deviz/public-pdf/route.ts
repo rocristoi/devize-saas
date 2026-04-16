@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
         "Content-Disposition": `inline; filename="${filename}"`,
       },
     });
-  } catch (error) {
+  } catch {
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { format, differenceInDays } from "date-fns";
 import { DashboardClient } from "./DashboardClient";
 
@@ -83,7 +82,7 @@ export default async function DashboardPage() {
       clientsCount={clientsCount || 0}
       subscriptionStateText={subscriptionStateText}
       subscriptionSubtext={subscriptionSubtext}
-      companyName={(profile?.companies as any)?.service_name || "Compania Ta"}
+      companyName={(profile?.companies as { service_name?: string })?.service_name || "Compania Ta"}
       announcements={announcements || []}
     />
   );

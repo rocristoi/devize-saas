@@ -1,15 +1,11 @@
 "use client";
 
-import React from "react";
 import { motion } from "framer-motion";
 import { 
-  HelpCircle, 
   ExternalLink,
   Info,
   Phone,
   Mail,
-  Globe,
-  Key,
   Database,
   Shield,
   FileText

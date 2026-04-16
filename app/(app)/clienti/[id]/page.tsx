@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { ArrowLeft, Car, Phone, MapPin, Building, Plus, FileText, User } from "lucide-react";
+import { ArrowLeft, Car, Phone, Building, Plus, FileText, User } from "lucide-react";
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { ro } from "date-fns/locale";
@@ -116,7 +116,6 @@ export default function ClientDetailsPage() {
   );
 
   const totalSpent = allDevize.reduce((acc, d) => acc + (d.total_deviz || 0), 0);
-  const activeDevizeCount = allDevize.filter(d => !d.is_finalizat).length;
 
   return (
     <div className="flex-1 w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-10 space-y-10">

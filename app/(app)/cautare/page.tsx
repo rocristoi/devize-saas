@@ -3,8 +3,6 @@
 import { useState, useEffect } from "react";
 import { Search, Car, User, FileText, ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { format } from "date-fns";
-import { ro } from "date-fns/locale";
 import Link from "next/link";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { LineWobble } from "ldrs/react";

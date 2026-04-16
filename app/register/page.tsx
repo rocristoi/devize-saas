@@ -1,6 +1,6 @@
 import { signup } from '@/app/auth/actions'
 import Link from 'next/link'
-import { Mail, ShieldCheck, CheckCircle2 } from 'lucide-react'
+import { Mail, ShieldCheck } from 'lucide-react'
 
 export default async function RegisterPage({
   searchParams,

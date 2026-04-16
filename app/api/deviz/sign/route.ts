@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js"; // Need service role to by
 
 export async function POST(req: Request) {
   try {
-    const { token, signature_data, devizId } = await req.json();
+    const { token, signature_data } = await req.json();
 
     if (!token || !signature_data) {
       return NextResponse.json({ error: "Lipsă token sau date semnătură" }, { status: 400 });
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     
     const fileName = `client_${deviz.id}_${Date.now()}.png`;
 
-    const { data: uploadData, error: uploadErr } = await adminSupabase.storage
+    const { error: uploadErr } = await adminSupabase.storage
       .from('signatures')
       .upload(fileName, buffer, {
         contentType: 'image/png',
@@ -76,7 +76,7 @@ export async function POST(req: Request) {
     // just changing state enables PDF stamping.
     return NextResponse.json({ success: true });
 
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Unknown error" }, { status: 500 });
   }
 }

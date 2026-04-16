@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { format } from "date-fns";
 import { ro } from "date-fns/locale";
 import Link from "next/link";
-import { Search, Eye, FileText, Plus, Car, Edit } from "lucide-react";
+import { Search, FileText, Plus, Car, Edit } from "lucide-react";
 import { DeleteDevizButton } from "@/components/deviz/DeleteDevizButton";
 import { PageHeader } from "@/components/ui/PageHeader";
 
@@ -53,15 +53,9 @@ export default async function DevizeHistoryPage({
     query = query.ilike("series", `%${search}%`);
   }
 
-  const { data: devize, error, count } = await query;
+  const { data: devize, count } = await query;
   
   const totalPages = count ? Math.ceil(count / limit) : 0;
-
-  const statusColors: Record<string, string> = {
-    draft: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300",
-    finalizat:
-      "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-  };
 
   return (
     <div className="w-full space-y-6">

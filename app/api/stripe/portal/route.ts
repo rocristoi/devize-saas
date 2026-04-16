@@ -9,12 +9,12 @@
  * No body required. Returns { url }.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getAdminSupabase } from '@/lib/billing';
 import { getStripe } from '@/lib/stripe';
 
-export async function POST(_req: NextRequest) {
+export async function POST() {
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) {

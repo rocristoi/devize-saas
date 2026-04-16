@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 // In-memory cache avoiding re-charging OpenAI credits for the exact same image URL
-const cache = new Map<string, any>();
+const cache = new Map<string, unknown>();
 
 async function scanWithOCR(imageUrl: string, hackaiKey: string) {
   if (cache.has(imageUrl)) {
@@ -67,7 +67,7 @@ async function scanWithOCR(imageUrl: string, hackaiKey: string) {
   let result;
   try {
     result = JSON.parse(cleaned);
-  } catch (err) {
+  } catch {
     console.error('[ocr] failed to parse response:', raw);
     throw new Error('OCR returned an unparseable response.');
   }
@@ -110,8 +110,8 @@ async function deleteImage(imageUrl: string, supabaseUrl: string, supabaseAdminK
     } else {
       console.log('[storage] Deleted:', filePath);
     }
-  } catch (err: any) {
-    console.warn('[storage] Delete error:', err.message);
+  } catch (err: unknown) {
+    console.warn('[storage] Delete error:', err instanceof Error ? err.message : String(err));
   }
 }
 
@@ -155,7 +155,7 @@ export async function POST(req: Request) {
   let body;
   try {
     body = await req.json();
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400 });
   }
 
@@ -168,9 +168,10 @@ export async function POST(req: Request) {
   let result;
   try {
     result = await scanWithOCR(imageUrl, hackaiKey);
-  } catch (err: any) {
-    console.error('[ocr] Error:', err.message);
-    return NextResponse.json({ error: 'OCR scan failed: ' + err.message }, { status: 502 });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('[ocr] Error:', msg);
+    return NextResponse.json({ error: 'OCR scan failed: ' + msg }, { status: 502 });
   }
 
   // 4. Delete image from bucket (Fire-and-forget)

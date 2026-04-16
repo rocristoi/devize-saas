@@ -49,7 +49,7 @@ export async function saveDeviz(data: {
     // 3. Upsert Client (simplified: match by nume & numarTelefon)
     // First, let's see if client exists
     let clientId;
-    let { data: existingClient } = await supabase
+    const { data: existingClient } = await supabase
       .from('clients')
       .select('id')
       .eq('company_id', companyId)
@@ -80,7 +80,7 @@ export async function saveDeviz(data: {
 
     // 4. Upsert Vehicle 
     let vehicleId;
-    let { data: existingVehicle } = await supabase
+    const { data: existingVehicle } = await supabase
       .from('vehicles')
       .select('id')
       .eq('company_id', companyId)
@@ -188,9 +188,9 @@ export async function saveDeviz(data: {
 
     return { success: true, devizId };
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Save Deviz Error:", error);
-    return { success: false, error: error.message };
+    return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
   }
 }
 
@@ -202,9 +202,9 @@ export async function deleteDeviz(devizId: string) {
     if (error) throw error;
     
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Delete Deviz Error:", error);
-    return { success: false, error: error.message };
+    return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
   }
 }
 export async function updateDeviz(devizId: string, data: {
@@ -251,7 +251,7 @@ export async function updateDeviz(devizId: string, data: {
 
   try {
     let clientId;
-    let { data: existingClient } = await supabase
+    const { data: existingClient } = await supabase
       .from('clients')
       .select('id')
       .eq('company_id', companyId)
@@ -279,7 +279,7 @@ export async function updateDeviz(devizId: string, data: {
     }
 
     let vehicleId;
-    let { data: existingVehicle } = await supabase
+    const { data: existingVehicle } = await supabase
       .from('vehicles')
       .select('id')
       .eq('company_id', companyId)
@@ -367,8 +367,8 @@ export async function updateDeviz(devizId: string, data: {
 
     return { success: true, devizId };
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Update Deviz Error:", error);
-    return { success: false, error: error.message };
+    return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
   }
 }

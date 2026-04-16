@@ -10,7 +10,7 @@ export default async function PiesePage() {
   if (!profile) return null;
 
   // Pre-fetch some data or let the client do it. Let's do server fetch for initial load.
-  const { data: parts, error } = await supabase
+  const { data: parts } = await supabase
     .from('parts_inventory')
     .select('*')
     .eq('company_id', profile.company_id)

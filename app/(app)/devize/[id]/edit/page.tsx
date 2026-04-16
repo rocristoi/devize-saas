@@ -46,6 +46,7 @@ export default async function EditDevizPage({ params }: { params: Promise<{ id: 
       km: deviz.km_intrare || "",
       nivelCarburant: deviz.nivel_carburant || "",
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     parts: (deviz.deviz_parts || []).map((p: any) => ({
       ...p,
       stare: p.stare || "Nou",
@@ -56,6 +57,7 @@ export default async function EditDevizPage({ params }: { params: Promise<{ id: 
       cod_piesa: p.cod_piesa || "",
       nume_piesa: p.nume_piesa || "",
     })),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     labor: (deviz.deviz_labor || []).map((l: any) => ({
       ...l,
       operatiune: l.operatiune || "",

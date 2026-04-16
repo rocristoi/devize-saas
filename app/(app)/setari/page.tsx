@@ -94,7 +94,7 @@ export default function SettingsPage() {
         } else {
           toast.error("Eroare la încărcarea semnăturii: " + uploadSigError.message);
         }
-      } catch (err) {
+      } catch {
         toast.error("Eroare neașteptată la încărcarea semnăturii.");
       }
     }
@@ -140,7 +140,7 @@ export default function SettingsPage() {
     return null;
   }
 
-  const isFieldDifferent = (a: any, b: any) => (a === null && b === '') ? false : (a === '' && b === null) ? false : a !== b;
+  const isFieldDifferent = (a: string | null | undefined, b: string | null | undefined) => (a === null && b === '') ? false : (a === '' && b === null) ? false : a !== b;
 
   const hasChanges = companyData && initialCompanyData && (
     isFieldDifferent(companyData.service_name, initialCompanyData.service_name) ||
