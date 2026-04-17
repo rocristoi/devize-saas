@@ -74,7 +74,7 @@ export default async function DevizPreviewPage({ params }: { params: Promise<{ i
         }
       />
 
-      <div className="bg-gray-50 dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden h-[1050px]">
+      <div className="bg-gray-50 dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden h-[70vh] md:h-[1050px]">
         <PdfIframeViewer
           src={`/api/deviz/${id}/pdf`}
           title={`Deviz ${deviz.series}`}

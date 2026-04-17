@@ -58,12 +58,14 @@ export function DashboardClient({
     <div className="pb-12 w-full">
       {/* Hero Section - True Full Width */}
       <div 
-        className="relative overflow-hidden bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 mb-6 pb-12 -mt-4 md:-mt-6 lg:-mt-8" 
+        className="relative overflow-hidden bg-white dark:bg-gray-900 border-b border-zinc-200 dark:border-zinc-800 mb-6 pb-12 -mt-4 md:-mt-6 lg:-mt-8" 
         style={{ width: '100vw', marginLeft: 'calc(50% - 50vw)' }}
       >
         
-        {/* Animated Background Elements - Dots Pattern & Floating Shapes */}
-        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#27272a_1px,transparent_1px)] [background-size:24px_24px] opacity-60"></div>
+        {/* Dots pattern - desktop only to avoid harsh look on mobile dark */}
+        <div className="hidden md:block absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#27272a_1px,transparent_1px)] [background-size:24px_24px] opacity-60"></div>
+        {/* Mobile: soft radial glow accent */}
+        <div className="md:hidden absolute inset-0 bg-gradient-to-b from-blue-500/5 to-transparent dark:from-blue-500/10 pointer-events-none"></div>
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-blue-100/50 dark:bg-blue-900/20 rounded-full blur-3xl opacity-70 animate-pulse pointer-events-none"></div>
         <div className="absolute bottom-0 left-10 w-72 h-72 bg-zinc-100 dark:bg-zinc-900/50 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
 

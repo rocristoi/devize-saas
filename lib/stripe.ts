@@ -133,18 +133,34 @@ export async function syncStripeSubscription(
     cancel_at_period_end: sub.cancel_at_period_end,
   };
 
+  console.log('[stripe] syncStripeSubscription:', {
+    subId: sub.id,
+    status: sub.status,
+    cancel_at_period_end: sub.cancel_at_period_end,
+    customerId,
+  });
+
   // ── 1. Try exact match by stripe_subscription_id ──────────────────────────
-  const { data: bySubId } = await db
+  const { data: bySubId, error: bySubIdErr } = await db
     .from('billing_subscriptions')
     .select('id')
     .eq('stripe_subscription_id', sub.id)
     .maybeSingle();
 
+  if (bySubIdErr) {
+    console.error('[stripe] syncStripeSubscription: lookup by sub id failed', bySubIdErr);
+  }
+
   if (bySubId?.id) {
-    await db
+    const { error: updateErr } = await db
       .from('billing_subscriptions')
       .update(update)
       .eq('id', bySubId.id);
+    if (updateErr) {
+      console.error('[stripe] syncStripeSubscription: update (path 1) failed', updateErr);
+    } else {
+      console.log('[stripe] syncStripeSubscription: updated row', bySubId.id, 'cancel_at_period_end →', update.cancel_at_period_end);
+    }
     return;
   }
 
@@ -171,10 +187,15 @@ export async function syncStripeSubscription(
       .maybeSingle();
 
     if (byCustomerId?.id) {
-      await db
+      const { error: updateErr } = await db
         .from('billing_subscriptions')
         .update(update)
         .eq('id', byCustomerId.id);
+      if (updateErr) {
+        console.error('[stripe] syncStripeSubscription: update (path 2 fallback) failed', updateErr);
+      } else {
+        console.log('[stripe] syncStripeSubscription: updated row', byCustomerId.id, '(path 2 fallback) cancel_at_period_end →', update.cancel_at_period_end);
+      }
       return;
     }
 
@@ -201,10 +222,17 @@ export async function syncStripeSubscription(
   const unlinked = rows.find((r: { id: string; stripe_subscription_id: string | null }) => !r.stripe_subscription_id);
   const targetId = (unlinked ?? rows[0]).id;
 
-  await db
+  console.log('[stripe] syncStripeSubscription: using path 3, targetId', targetId, 'unlinked?', !!unlinked);
+
+  const { error: updateErr } = await db
     .from('billing_subscriptions')
     .update(update)
     .eq('id', targetId);
+  if (updateErr) {
+    console.error('[stripe] syncStripeSubscription: update (path 3) failed', updateErr);
+  } else {
+    console.log('[stripe] syncStripeSubscription: updated row', targetId, '(path 3) cancel_at_period_end →', update.cancel_at_period_end);
+  }
 }
 
 // ─── Payment recording ────────────────────────────────────────────────────────

@@ -42,10 +42,18 @@ export async function GET(req: NextRequest) {
     const filename = rawFilename.replace(/[^\w\-. ]/g, "_").substring(0, 100);
 
     const PDF_SERVICE_URL = process.env.PDF_SERVICE_URL || "http://localhost:3001";
+    const PDF_SERVICE_SECRET = process.env.PDF_SERVICE_SECRET;
+    if (!PDF_SERVICE_SECRET) {
+      console.error("PDF_SERVICE_SECRET is not set");
+      return new NextResponse("Server configuration error", { status: 500 });
+    }
 
     const response = await fetch(`${PDF_SERVICE_URL}/generate-pdf`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-pdf-service-secret": PDF_SERVICE_SECRET,
+      },
       body: JSON.stringify({ html, filename }),
     });
 

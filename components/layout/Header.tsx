@@ -10,7 +10,7 @@ export function Header({ companyName, companyLogoUrl }: { companyName?: string, 
   const { toggleSidebar, isCollapsed } = useSidebar();
 
   return (
-    <header className="bg-white/90 dark:bg-gray-900/90 text-gray-900 dark:text-gray-100 flex items-center justify-between shadow-sm border-b border-gray-200 dark:border-gray-800 relative md:sticky md:top-0 z-50 backdrop-blur-xl h-16 transition-colors duration-300">
+    <header className="bg-white/90 dark:bg-gray-900/90 text-gray-900 dark:text-gray-100 flex items-center justify-between shadow-sm border-b border-gray-200 dark:border-gray-800 relative sticky top-0 z-50 backdrop-blur-xl h-16 transition-colors duration-300">
       <div className="flex items-center h-full px-4 gap-4">
         {/* Hamburger Toggle */}
         <button

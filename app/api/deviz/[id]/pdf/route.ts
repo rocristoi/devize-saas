@@ -10,6 +10,12 @@ export async function GET(
     const { id } = await params;
     const supabase = await createClient();
 
+    // Require authentication — only /api/deviz/public-pdf is accessible without login
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     const { data: deviz, error } = await supabase
       .from("devize")
       .select(

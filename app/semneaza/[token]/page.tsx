@@ -69,7 +69,7 @@ export default async function SemneazaDevizPage({ params }: { params: Promise<{ 
                           </div>
                           <h2 className="text-2xl font-semibold text-gray-900 mb-3">Document Semnat</h2>
                           <p className="text-gray-500 leading-relaxed text-sm">
-                              Acest deviz a fost semnat și finalizat cu succes. Găsiți previzualizarea PDF completă alăturat.
+                              Acest deviz a fost semnat și finalizat cu succes. Găsiți previzualizarea PDF completă mai jos / alături.
                           </p>
                       </div>
                       
@@ -171,7 +171,7 @@ export default async function SemneazaDevizPage({ params }: { params: Promise<{ 
                     <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
                         <h2 className="text-lg font-semibold text-gray-900 mb-2">Semnătură</h2>
                         <p className="text-sm text-gray-500 mb-6 leading-relaxed">
-                            Prin semnătura de mai jos confirmați acceptarea costurilor și a datelor din documentul alăturat.
+                            Prin semnătura de mai jos confirmați acceptarea costurilor și a datelor din documentul alăturat / de mai jos.
                         </p>
                         <ClientSignatureForm devizId={deviz.id} token={token} />
                     </div>

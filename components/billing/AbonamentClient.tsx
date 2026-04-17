@@ -88,7 +88,8 @@ function StatusBanner({ sub, hasPaymentMethod }: { sub: BillingSubscription; has
             <>
               Mai ai <strong>{daysRemaining}</strong> zile din perioada gratuită (până pe {format(trialEnd, 'dd MMM yyyy', { locale: ro })}).
               {!hasPaymentMethod && <> Alege un plan pentru a evita blocarea.</>}
-              {hasPaymentMethod && <> Cardul tău va fi debitat automat la finalul trial-ului.</>}
+              {hasPaymentMethod && !sub.cancel_at_period_end && <> Cardul tău va fi debitat automat la finalul trial-ului.</>}
+              {hasPaymentMethod && sub.cancel_at_period_end && <> Abonamentul va fi anulat la finalul trial-ului. Poți reactiva din portalul Stripe.</>}
             </>
           )}
           {isActive && periodEnd && (

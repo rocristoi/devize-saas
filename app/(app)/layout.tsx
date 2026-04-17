@@ -42,15 +42,15 @@ export default async function AppLayout({
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden font-sans transition-colors duration-300">
+      <div className="fixed inset-0 flex bg-gray-50 dark:bg-gray-900 font-sans transition-colors duration-300">
         {/* Sidebar for Desktop */}
         <Sidebar />
         
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col min-w-0 transition-colors duration-300 overflow-x-hidden">
+        <div className="flex-1 flex flex-col min-w-0 transition-colors duration-300 overflow-hidden">
           <Header companyName={profile.company.service_name} companyLogoUrl={profile.company.logo_url} />
           
-          <main className="flex-1 overflow-x-hidden overflow-y-auto animate-slide-in scrollbar-hide pb-24 md:pb-8 p-4 md:p-6 lg:p-8">
+          <main className="flex-1 overflow-x-hidden overflow-y-auto overscroll-contain animate-slide-in scrollbar-hide pb-24 md:pb-8 p-4 md:p-6 lg:p-8">
             <div className="mx-auto w-full max-w-6xl">
               {children}
             </div>

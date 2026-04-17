@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { ShieldCheck, Lock } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { SubmitButton } from '@/components/ui/SubmitButton'
 
 export default async function LoginPage({
   searchParams,
@@ -43,7 +44,7 @@ export default async function LoginPage({
           </div>
         )}
 
-        <form className="space-y-5">
+        <form action={login} className="space-y-5">
           <div className="space-y-1">
             <label className="text-sm font-semibold text-gray-700 dark:text-gray-300" htmlFor="email">
               Adresă Email
@@ -81,13 +82,11 @@ export default async function LoginPage({
           </div>
 
           <div className="pt-2">
-            <button
-              formAction={login}
-              type="submit"
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl shadow-sm shadow-blue-500/30 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 active:scale-[0.98] transition-all duration-200"
-            >
-              <span>Intră în cont</span>
-            </button>
+            <SubmitButton
+              label="Intră în cont"
+              loadingLabel="Se autentifică..."
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl shadow-sm shadow-blue-500/30 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 active:scale-[0.98] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
+            />
           </div>
           
           <div className="flex items-center justify-center gap-1.5 mt-4 text-xs font-medium text-gray-500 dark:text-gray-400">

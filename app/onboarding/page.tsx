@@ -1,8 +1,8 @@
 'use client'
 
-import { useTransition, useRef } from 'react'
+import { useTransition, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Info, Loader2, CheckCircle2 } from 'lucide-react'
+import { Info, Loader2, CheckCircle2, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { ClientSignatureField } from './ClientSignatureField'
 import { LocalizedFileInput } from './LocalizedFileInput'
@@ -11,17 +11,35 @@ import { completeOnboarding } from './actions'
 // ─── Small helper ─────────────────────────────────────────────────────────────
 
 function TooltipLabel({ label, tooltip, required = false }: { label: string; tooltip: string; required?: boolean }) {
+  const [open, setOpen] = useState(false);
   return (
     <div className="flex items-center gap-1.5 mb-1.5">
       <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
-      <div className="group relative flex items-center justify-center cursor-help">
-        <Info className="w-4 h-4 text-gray-400 hover:text-blue-500 transition-colors" />
-        <div className="absolute bottom-full mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 w-48 p-2 text-xs text-white bg-gray-900 dark:bg-gray-100 dark:text-gray-900 rounded-lg shadow-lg z-10">
-          {tooltip}
-          <div className="absolute top-full left-1/2 -ml-1 border-4 border-transparent border-t-gray-900 dark:border-t-gray-100" />
-        </div>
+      <div className="relative flex items-center justify-center">
+        <button
+          type="button"
+          aria-label={`Info: ${label}`}
+          onClick={() => setOpen((v) => !v)}
+          className="cursor-pointer"
+        >
+          <Info className="w-4 h-4 text-gray-400 hover:text-blue-500 transition-colors" />
+        </button>
+        {open && (
+          <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-52 p-2 text-xs text-white bg-gray-900 dark:bg-gray-100 dark:text-gray-900 rounded-lg shadow-lg z-10">
+            {tooltip}
+            <div className="absolute top-full left-1/2 -ml-1 border-4 border-transparent border-t-gray-900 dark:border-t-gray-100" />
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="absolute top-1 right-1 text-white/70 dark:text-gray-600 hover:text-white dark:hover:text-gray-900"
+              aria-label="Închide"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
@@ -128,15 +146,6 @@ export default function OnboardingPage() {
               <div>
                 <TooltipLabel label="Titlu antet PDF" tooltip="Titlul principal pe deviz (opțional)." />
                 <input name="pdfHeaderTitle" type="text" placeholder="DEVIZ DE REPARAȚIE" defaultValue="DEVIZ DE REPARAȚIE" className={inputCls} />
-              </div>
-              <div className="flex gap-4">
-                <div className="flex-1">
-                  <TooltipLabel label="Culoare Brand" tooltip="Culoarea utilizată pe PDF-uri." />
-                  <div className="flex items-center gap-3">
-                    <input name="primaryColor" type="color" defaultValue="#2563eb" className="w-12 h-10 rounded cursor-pointer bg-transparent border-0" title="Alegeți culoarea" />
-                    <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">Selectați nuanța</span>
-                  </div>
-                </div>
               </div>
               <div className="md:col-span-2 mt-2">
                 <TooltipLabel label="Logo Companie (Opțional)" tooltip="PNG/JPG cu fundal transparent, recomandat." />
