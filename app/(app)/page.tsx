@@ -42,7 +42,7 @@ export default async function DashboardPage() {
 
   // 3. Abonament state
   const { data: sub } = await supabase
-    .from('subscriptions')
+    .from('billing_subscriptions')
     .select('*')
     .eq('company_id', companyId)
     .single();

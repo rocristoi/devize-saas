@@ -89,10 +89,6 @@ export default async function LoginPage({
             />
           </div>
           
-          <div className="flex items-center justify-center gap-1.5 mt-4 text-xs font-medium text-gray-500 dark:text-gray-400">
-            <Lock className="w-3.5 h-3.5" />
-            <span>Autentificare securizată SSL</span>
-          </div>
         </form>
 
         <div className="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
